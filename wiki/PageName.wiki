@@ -1,0 +1,29 @@
+#summary class XMLToProperties
+#labels Phase-Design
+
+= XMLToProperties =
+
+Class XMLToProperties converts from XML to Log4J properties
+
+----
+
+== Properties ==
+
+=== String inputFile ===
+      Input file path
+
+----
+
+== Methods ==
+
+=== public XMLToProperties(String inputFile) ===
+      Constructor
+    * parameter inputFile: Log4J XML input file
+    * throws java.io.IOException if inputFile does not exist
+
+=== public void Convert() ===
+      Converts and prints XML to standard output
+
+=== public void Convert(String outputFile) ===
+      Converts and prints XML to file
+    * parameter outputFile: output file with Log4J properties
