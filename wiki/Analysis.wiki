@@ -20,4 +20,4 @@ The conversion from .xml to .properties is done using Extensible Stylesheet Lang
 
 = Class Diagram =
 
-<img src="https://drive.google.com/file/d/0By5WPVwOp9a8WnRWMnhZNGh3Q0k/edit?usp=sharing" alt="Class Diagram"/>
+<img src="https://drive.google.com/file/d/0By5WPVwOp9a8VjBycURHczMzdUk/edit?usp=sharing" alt="Class Diagram"/>
