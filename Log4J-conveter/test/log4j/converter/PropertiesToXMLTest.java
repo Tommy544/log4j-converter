@@ -18,6 +18,7 @@ import org.junit.AfterClass;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 
 /**
@@ -48,15 +49,22 @@ public class PropertiesToXMLTest {
     public void tearDown() {
     }
 
-    @Test
-    public void wrongInputFileArgument() throws IOException {
-        converter.main(new String[]{"file.prop"});
-        
-        handler.flush();
-        String logMsg = out.toString();
-        
-        assertEquals("File argument must end with .xml or .properties", logMsg);
+    @Test(expected = IllegalArgumentException.class)
+    public void wrongInputFileArgumentNoExtension() throws IOException {
+        Log4JConveter.getFileExtension("test");
     }
+    
+//    @Rule 
+//    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
+//    
+//    @Test
+//    public void wrongInputFileArgumentWrongExtension() throws IOException {
+//        converter.main(new String[]{"test.prop"});
+//        
+//        handler.flush();
+//        String logMsg = out.toString();
+//        assertEquals("File argument must end with .xml or .properties", logMsg);
+//    }
     
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:

@@ -14,14 +14,15 @@ import javax.xml.transform.TransformerException;
  * @author Michal
  */
 public class Log4JConveter {
+
     public static final Logger logger = Logger.getLogger(Log4JConveter.class.getName());
 
-    private static String getFileExtension(String fileName) {
+    public static String getFileExtension(String fileName) {
         String[] strings = fileName.split("\\.");
         if (strings.length <= 1) {
             System.err.println("File argument must end with .xml or .properties");
             logger.log(Level.SEVERE, "File argument did not end with .xml or .properties.");
-            System.exit(1);
+            throw new IllegalArgumentException("fileName doesn't end with .xml or .properties");
         }
 
         return strings[strings.length - 1];
@@ -35,7 +36,12 @@ public class Log4JConveter {
             System.err.println("No input file specified by argument.");
             System.exit(4);
         }
-        String fileExtension = getFileExtension(args[0]);
+        String fileExtension = null;
+        try {
+            fileExtension = getFileExtension(args[0]);
+        } catch (IllegalArgumentException e) {
+            System.exit(1);
+        }
         switch (fileExtension) {
             case "xml":
                 XMLToProperties xmlToProperties = new XMLToProperties(args[0]);
