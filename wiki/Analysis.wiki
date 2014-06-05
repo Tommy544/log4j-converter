@@ -20,4 +20,4 @@ The conversion from .xml to .properties is done using Extensible Stylesheet Lang
 
 = Class Diagram =
 
-https://code.google.com/p/log4j-converter/source/browse/wiki/img/Log4J-converter_Class_Diagram.jpg
+http://www.highsnobiety.com/files/2013/05/lamborghini-egoista-concept-car-5.jpg
