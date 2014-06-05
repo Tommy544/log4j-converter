@@ -1,16 +1,16 @@
-#A basic design of log4j-converter application
+#summary A basic design of log4j-converter application
 
 =Usage=
 
 The application is designed to be used as a command line application. The following options are available:
-# User starts the application with one argument pointing to a .properties file
-  * The application transforms .properties file to an XML syntax and prints the result to standard output
-# User starts the application with one argument pointing to a .xml file
-  * The application transforms .xml file to a .properties syntax and prints the result to standard output
-# User starts the application with two arguments. The first argument points to an .properties file (input) and the second argument points to a desired .xml file (output)
-  * The Application transforms .properties file to a .xml file and saves the result as a file (given by second argument)
-# User starts the application with two arguments. The first argument points to an .xml file (input) and the second argument points to a desired .properties file (output)
-  * The application transforms .xml file to a .properties file and saves the result as a file (given by second argument)
+  # User starts the application with one argument pointing to a .properties file
+    * The application transforms .properties file to an XML syntax and prints the result to standard output
+  # User starts the application with one argument pointing to a .xml file
+    * The application transforms .xml file to a .properties syntax and prints the result to standard output
+  # User starts the application with two arguments. The first argument points to an .properties file (input) and the second argument points to a desired .xml file (output)
+    * The Application transforms .properties file to a .xml file and saves the result as a file (given by second argument)
+  # User starts the application with two arguments. The first argument points to an .xml file (input) and the second argument points to a desired .properties file (output)
+    * The application transforms .xml file to a .properties file and saves the result as a file (given by second argument)
 
 = Implementation =
 
@@ -19,4 +19,3 @@ The conversion from .properties to .xml is done using Document Object Model (DOM
 The conversion from .xml to .properties is done using Extensible Stylesheet Language Transformations (XSLT). The file is also checked for validity by DTD prior to transformations.
 
 = Class Diagram =
-
