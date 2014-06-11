@@ -28,6 +28,7 @@ public class XMLToProperties {
 
     public static final Logger logger = Logger.getLogger(XMLToProperties.class.getName());
     private String inputFile;
+    private final String xslFile = "src/log4j/converter/XMLToProperties.xsl";
     private boolean foundError = false;
 
     /**
@@ -98,7 +99,7 @@ public class XMLToProperties {
         System.out.println(tf.getClass());
 
         Transformer xsltProc = tf.newTransformer(
-                new StreamSource(new File("src/log4j/converter/XMLToProperties.xsl")));
+                new StreamSource(new File(xslFile)));
 
         xsltProc.transform(
                 new StreamSource(new File(inputFile)),
@@ -112,6 +113,13 @@ public class XMLToProperties {
      */
     public void Convert(String outputFile) throws TransformerConfigurationException, TransformerException {
 
-        // TODO
+        TransformerFactory tf = TransformerFactory.newInstance();
+
+        Transformer xsltProc = tf.newTransformer(
+                new StreamSource(new File(xslFile)));
+
+        xsltProc.transform(
+                new StreamSource(new File(inputFile)),
+                new StreamResult(new File(outputFile)));
     }
 }
