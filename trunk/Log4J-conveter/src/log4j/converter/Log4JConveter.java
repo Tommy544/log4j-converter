@@ -7,7 +7,9 @@ package log4j.converter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -45,7 +47,11 @@ public class Log4JConveter {
         switch (fileExtension) {
             case "xml":
                 XMLToProperties xmlToProperties = new XMLToProperties(args[0]);
-                xmlToProperties.validate();
+                try {
+                    xmlToProperties.validate();
+                } catch (ParserConfigurationException | SAXException ex) {
+                    logger.log(Level.SEVERE, "Cought exception while validating XML.", ex);
+                }
                 try {
                     xmlToProperties.Convert();
                 } catch (TransformerException ex) {
