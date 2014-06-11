@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.Properties;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -26,6 +27,8 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * 
@@ -161,20 +164,18 @@ public class PropertiesToXML {
                     unprocesedKey=true;
                     break;
                 }
-                String bigestKey="";
-                String lastKey;
-//                processErrorHandler(properties,keys,currentAppenderPrefix,appender);
-//                processParams(properties,keys,currentAppenderPrefix,appender);
-//                processRollingPolicy(properties,keys,currentAppenderPrefix,appender);
-//                processTriggeringPolicy(properties,keys,currentAppenderPrefix,appender);
-//                processConnectionSource(properties,keys,currentAppenderPrefix,appender);
-                lastKey=processLayout(properties,keys,currentAppenderPrefix,appender);
-                if(lastKey.compareTo(bigestKey)>0){
-                    bigestKey=lastKey;
-                }
-//                processFilters(properties,keys,currentAppenderPrefix,appender);
-//                processAppenderRefs(properties,keys,currentAppenderPrefix,appender);
-                it=keys.tailSet(bigestKey).iterator();
+                String lastKey="";
+                lastKey = mantainLastKey(processErrorHandler(properties,keys,currentAppenderPrefix,appender),lastKey);
+                lastKey = mantainLastKey(processParams(properties,keys,currentAppenderPrefix,appender,1,new String[]{"",
+                "errorHandler", //"rollingPolicy", "triggeringPolicy", "connectionSource",
+                "layout", "filter", "appender-ref"}), lastKey);
+//                lastKey = mantainLastKey(processRollingPolicy(properties,keys,currentAppenderPrefix,appender), lastKey);
+//                lastKey = mantainLastKey(processTriggeringPolicy(properties,keys,currentAppenderPrefix,appender), lastKey);
+//                lastKey = mantainLastKey(processConnectionSource(properties,keys,currentAppenderPrefix,appender), lastKey);
+                lastKey = mantainLastKey(processLayout(properties,keys,currentAppenderPrefix,appender), lastKey);
+                lastKey = mantainLastKey(processAppenderRefs(properties,keys,currentAppenderPrefix,appender), lastKey);
+//                lastKey = mantainLastKey(processFilters(properties,keys,currentAppenderPrefix,appender), lastKey);
+                it=keys.tailSet(lastKey).iterator();
             }
             configurationElemnt.appendChild(appender);
         }
@@ -289,44 +290,129 @@ public class PropertiesToXML {
     private boolean isStandartLevelValue(String levelValue){
         return levelValue.matches("all|trace|debug|info|warn|error|fatal|off|null");
     }
-
-    private void processErrorHandler(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    //<editor-fold defaultstate="collapsed" desc="Processing errorHandlers">
+    
+    private String processErrorHandler(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
+        final String prefix=currentAppenderPrefix+".errorhandler";
+        Element hander;
+        SortedSet myKeys=keys.tailSet(prefix);
+        if(myKeys.isEmpty()) return null;
+        if(myKeys.first().equals(prefix)){
+            hander = doc.createElement("errorHandler");
+            hander.setAttribute("class", properties.getProperty(keys.first()));
+            appender.appendChild(hander);
+        }else{
+            return keys.first();
+        }
+            processRootRef(properties, myKeys, prefix, hander);
+            processLoggerRefs(properties, myKeys, prefix, hander);
+            processAppenderRefs(properties, myKeys, prefix, hander);
+            processParams(properties, myKeys, prefix+".", hander, 0, new String[]{"",".root-ref",".logger-ref",".appender-ref"});
+        return null;
     }
+    
+    private String processRootRef(Properties properties, SortedSet<String> keys, String handlerPrefix, Element element){
+        String prefix=handlerPrefix+".root-ref";
+        for(String key :keys.tailSet(prefix)){
+            if(!key.startsWith(prefix)) {
+                return key;
+            }
+            if(properties.getProperty(key).equalsIgnoreCase("true")){
+                element.appendChild(doc.createElement("root-ref"));
+            }
+        }
+        return null;
+    }
+    
+    private String processLoggerRefs(Properties properties, SortedSet<String> keys, String handlerPrefix, Element element){
+        String prefix=handlerPrefix+".logger-ref";
+        for(String key :keys.tailSet(prefix)){
+            if(!key.startsWith(prefix)) {
+                return key;
+            }
+            Element ref=doc.createElement("logger-ref");
+            ref.setAttribute("ref", properties.getProperty(key));
+            element.appendChild(ref);
+        }
+        return null;
+    }
+    
+    //</editor-fold>
 
-    private String processParams(Properties properties, SortedSet<String> keys, String prefix, Element element) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//        for(String key :keys.tailSet(prefix)){
-//            if(!key.startsWith(prefix)) {
-//                return key;
-//            }
-//            processParam(properties, key, prefix, element);
-//        }
-//        return null;
+    private String processParams(Properties properties, SortedSet<String> keys, String prefix, Element element, int position, String[] ignored) {
+        NodeList childNodes = element.getChildNodes();
+        Node refChild = childNodes.item(position);
+        for(String key :keys.tailSet(prefix)){
+            if(!key.startsWith(prefix)) {
+                return key;
+            }
+            String name=key.substring(prefix.length());
+            boolean isParam=true;
+            for(String s : ignored){
+                if(key.startsWith(s)){
+                    isParam=false;
+                    continue;
+                }
+            }
+            if(isParam) {
+                Element param = doc.createElement("param");
+                param.setAttribute("name", name);
+                param.setAttribute("value", properties.getProperty(key));
+                element.insertBefore(param, refChild);
+            }
+        }
+        return null;
     }
     private void processParam(Properties properties, String key, String prefix, Element element){
             Element param = doc.createElement("param");
-            param.setAttribute("name", key.substring(prefix.length()));//prefix neobsahuje tečku, proto +1
+            param.setAttribute("name", key.substring(prefix.length()));
             param.setAttribute("value", properties.getProperty(key));
             element.appendChild(param);
     }
 
-    private void processRollingPolicy(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+//    private String processRollingPolicy(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
+//
+//    private String processTriggeringPolicy(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
+//
+//    private String processConnectionSource(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
 
-    private void processTriggeringPolicy(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    private String processFilters(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
+        final String prefix=currentAppenderPrefix+".filter";
+        for(String key :keys.tailSet(prefix)){//TODO iteratory
+            if(!key.startsWith(prefix)) {
+                return key;
+            }
+            
+            Element filter=null;
+            String filtrPrefix=key;
+            for(String fKey :keys.tailSet(filtrPrefix)){
+                if(!fKey.startsWith(filtrPrefix)) {
+                    return fKey;
+                }
 
-    private void processConnectionSource(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                if(null==filter){
+                    if(key.equals(filtrPrefix)){
+                        filter = doc.createElement("filter");
+                        filter.setAttribute("class", properties.getProperty(key));
+                        appender.appendChild(filter);
+                    }else{
+                        //TODO nějakou vyjimku
+                    }
+                }else{
+                    processParam(properties, key, filtrPrefix+".", filter);
+                }
+            }
+        }
+        return null;
+    
     }
-
-    private void processFilters(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
+    
     private String processLayout(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
         final String prefix=currentAppenderPrefix+".layout";
         Element layout=null;
@@ -350,7 +436,26 @@ public class PropertiesToXML {
         return null;
     }
 
-    private void processAppenderRefs(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    
+    private String processAppenderRefs(Properties properties, SortedSet<String> keys, String handlerPrefix, Element element){
+        String prefix=handlerPrefix+".appender-ref";
+        for(String key :keys.tailSet(prefix)){
+            if(!key.startsWith(prefix)) {
+                return key;
+            }
+            Element ref=doc.createElement("appender-ref");
+            ref.setAttribute("ref", properties.getProperty(key));
+            element.appendChild(ref);
+        }
+        return null;
+    }
+
+    private String mantainLastKey(String newKey, String lastKey) {
+        if(null==newKey) return lastKey;
+        if(newKey.compareTo(lastKey)>0){
+            return newKey;
+        }else{
+            return lastKey;
+        }
     }
 }
