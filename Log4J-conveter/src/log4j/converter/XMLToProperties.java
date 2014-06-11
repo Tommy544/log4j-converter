@@ -34,45 +34,38 @@ public class XMLToProperties {
     /**
      * Validates input XML file using official log4j.dtd
      */
-    public void validate() {
-        try {
+    public void validate() throws ParserConfigurationException, SAXException, IOException {
 
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setValidating(true);
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            db.setErrorHandler(new ErrorHandler() {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setValidating(true);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        db.setErrorHandler(new ErrorHandler() {
 
-                @Override
-                public void warning(SAXParseException exception) throws SAXException {
-                    System.err.println("Warning while validating input XML file:\nWarning:"
-                            + exception.getMessage());
-                    foundError = true;
-                }
-
-                @Override
-                public void error(SAXParseException exception) throws SAXException {
-                    System.err.println("Error while validating input XML file:\nError: "
-                            + exception.getMessage());
-                    foundError = true;
-                }
-
-                @Override
-                public void fatalError(SAXParseException exception) throws SAXException {
-                    System.err.println("Fatal Error while validating input XML file:\nFatal Error: "
-                            + exception.getMessage());
-                    foundError = true;
-                }
-            });
-            Document doc = db.parse(inputFile);
-
-            if (foundError) {
-                System.exit(3);
-            } else {
-                logger.log(Level.INFO, "File validated successfuly.");
+            @Override
+            public void warning(SAXParseException exception) throws SAXException {
+                System.err.println("Warning while validating input XML file:\nWarning:"
+                        + exception.getMessage());
+                throw new SAXParseException("warning", null, exception);
             }
-        } catch (ParserConfigurationException | SAXException | IOException ex) {
-            logger.log(Level.SEVERE, "Cought exception while validating XML.", ex);
-        }
+
+            @Override
+            public void error(SAXParseException exception) throws SAXException {
+                System.err.println("Error while validating input XML file:\nError: "
+                        + exception.getMessage());
+                throw new SAXParseException("error", null, exception);
+            }
+
+            @Override
+            public void fatalError(SAXParseException exception) throws SAXException {
+                System.err.println("Fatal Error while validating input XML file:\nFatal Error: "
+                        + exception.getMessage());
+                throw new SAXParseException("fatal error", null, exception);
+            }
+        });
+        Document doc = db.parse(inputFile);
+
+        logger.log(Level.INFO, "File validated successfuly.");
+
     }
 
     /**
