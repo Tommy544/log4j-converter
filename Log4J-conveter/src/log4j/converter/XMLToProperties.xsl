@@ -30,7 +30,7 @@
         <xsl:apply-templates select="//categoryFactory"/>
         <xsl:apply-templates select="//loggerFactory"/>
     </xsl:template>
-            
+        
     <!--root-->
     <xsl:template match="//root">
         <xsl:choose>
@@ -55,7 +55,17 @@
     <xsl:template match="//root/param">
         <xsl:text>log4j.rootLogger.</xsl:text><xsl:value-of select="@name"/><xsl:text>=</xsl:text><xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>    
     </xsl:template>
-            
+    
+    <!--root/appender-ref s ciarkou-->
+    <xsl:template match="//root/appender-ref" mode="comma">
+        <xsl:text>, </xsl:text><xsl:value-of select="@ref"/>       
+    </xsl:template>
+    
+    <!--root/appender-ref bez ciarky-->
+    <xsl:template match="//root/appender-ref" mode="noComma">
+        <xsl:value-of select="@ref"/>       
+    </xsl:template>
+        
     <!--appender-->
     <xsl:template match="//appender">
         <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="@name"/>=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>
@@ -261,6 +271,16 @@
         <xsl:text>&#10;&#10;</xsl:text>   
     </xsl:template>
     
+    <!--logger/appender-ref bez ciarky -->
+    <xsl:template match="//logger/appender-ref" mode="comma">
+        <xsl:value-of select="@ref"/>       
+    </xsl:template>
+    
+    <!--logger/appender-ref s ciarkou-->
+    <xsl:template match="//logger/appender-ref" mode="comma">
+        <xsl:text>, </xsl:text><xsl:value-of select="@ref"/>       
+    </xsl:template>
+    
     <!--category-->
     <xsl:template match="//category">
         <xsl:choose>
@@ -279,20 +299,21 @@
         </xsl:choose>  
         <xsl:text>&#10;&#10;</xsl:text>   
     </xsl:template>
+    
+   <!--category/appender-ref s ciarkou-->
+    <xsl:template match="//category/appender-ref" mode="comma">
+        <xsl:text>, </xsl:text><xsl:value-of select="@ref"/>       
+    </xsl:template>
+    
+    <!--category/appender-ref bez ciarky-->
+    <xsl:template match="//category/appender-ref" mode="noComma">
+        <xsl:value-of select="@ref"/>       
+    </xsl:template>
   
     <!--category/param-->
     <xsl:template match="//category/param">
         <xsl:text>log4j.logger.</xsl:text><xsl:value-of select="../@name"/>.<xsl:value-of select="@name"/><xsl:text>=</xsl:text><xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>            
     </xsl:template>
-    
-    <!--//appender-ref s ciarkou-->
-    <xsl:template match="//appender-ref" mode="comma">
-        <xsl:text>, </xsl:text><xsl:value-of select="@ref"/>
-    </xsl:template>
-    
-    <!--//appender-ref bez ciarky-->
-    <xsl:template match="//appender-ref" mode="noComma">
-        <xsl:value-of select="@ref"/>
-    </xsl:template>
+
     
 </xsl:stylesheet>
