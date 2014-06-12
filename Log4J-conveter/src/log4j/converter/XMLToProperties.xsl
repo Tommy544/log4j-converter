@@ -9,14 +9,13 @@
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:log4j="http://jakarta.apache.org/log4j/" version="1.0">
     <xsl:output method="text"/>
-
     
     <!--zaklad-->
     <xsl:template match="/">
-        <xsl:if test="//log4j:configuration[@debug]">
+        <xsl:if test="//log4j:configuration[@debug!='null']">
             <xsl:text>log4j.debug=</xsl:text><xsl:value-of select="//log4j:configuration/@debug"/><xsl:text>&#10;</xsl:text>
         </xsl:if>
-        <xsl:if test="//log4j:configuration[@threshold]">
+        <xsl:if test="//log4j:configuration[@threshold!='null']">
             <xsl:text>log4j.threshold=</xsl:text><xsl:value-of select="//log4j:configuration/@threshold"/><xsl:text>&#10;</xsl:text>
         </xsl:if>
         <xsl:if test="//log4j:configuration[@reset]">
@@ -31,19 +30,20 @@
         <xsl:apply-templates select="//categoryFactory"/>
         <xsl:apply-templates select="//loggerFactory"/>
     </xsl:template>
-        
+            
     <!--root-->
     <xsl:template match="//root">
         <xsl:choose>
             <xsl:when test="level">
-                <xsl:text>log4j.rootLogger=</xsl:text><xsl:value-of select="translate(level/@value,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/><xsl:apply-templates select="appender-ref" mode="level"/>
+                <xsl:text>log4j.rootLogger=</xsl:text><xsl:value-of select="translate(level/@value,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/><xsl:apply-templates select="appender-ref" mode="comma"/>
             </xsl:when>
             <xsl:when test="priority">
-                <xsl:text>log4j.rootLogger=</xsl:text><xsl:value-of select="translate(priority/@value,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/><xsl:apply-templates select="appender-ref" mode="level"/> 
+                <xsl:text>log4j.rootLogger=</xsl:text><xsl:value-of select="translate(priority/@value,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/><xsl:apply-templates select="appender-ref" mode="comma"/> 
             </xsl:when>
             <xsl:otherwise>
                 <xsl:if test="appender-ref">
-                    <xsl:text>log4j.rootLogger=</xsl:text><xsl:apply-templates select="appender-ref" mode="noLevel"/>
+                    <xsl:text>log4j.rootLogger=</xsl:text><xsl:apply-templates select="appender-ref[1]" mode="noComma"/>
+                    <xsl:apply-templates select="appender-ref[position()>1]" mode="comma"/> 
                 </xsl:if> 
             </xsl:otherwise>
         </xsl:choose>  
@@ -55,20 +55,9 @@
     <xsl:template match="//root/param">
         <xsl:text>log4j.rootLogger.</xsl:text><xsl:value-of select="@name"/><xsl:text>=</xsl:text><xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>    
     </xsl:template>
-    
-    <!--root/appender-ref s ciarkou-->
-    <xsl:template match="//root/appender-ref" mode="level">
-        <xsl:text>, </xsl:text><xsl:value-of select="@ref"/>       
-    </xsl:template>
-    
-    <!--root/appender-ref bez ciarky-->
-    <xsl:template match="//root/appender-ref" mode="noLevel">
-        <xsl:value-of select="@ref"/>       
-    </xsl:template>
-        
+            
     <!--appender-->
     <xsl:template match="//appender">
-        <!--tu by mal byt nazov appenderu za #-->
         <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="@name"/>=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>
         <xsl:apply-templates select="errorHandler"/>
         <xsl:apply-templates select="param"/>  
@@ -191,7 +180,7 @@
     </xsl:template>  
     
     <!--appender/appender-ref-->
-    <xsl:template match="//root/appender-ref" mode="noLevel">
+    <xsl:template match="//appender/appender-ref">
         <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../@name"/>.appender-ref=<xsl:value-of select="@ref"/><xsl:text>&#10;</xsl:text>     
     </xsl:template> 
   
@@ -260,49 +249,50 @@
     <xsl:template match="//logger">
         <xsl:choose>
             <xsl:when test="level">
-                <xsl:text>log4j.logger.<xsl:value-of select="@name"/>=</xsl:text><xsl:value-of select="translate(level/@value,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/><xsl:apply-templates select="appender-ref"/>
+                <xsl:text>log4j.logger.<xsl:value-of select="@name"/>=</xsl:text><xsl:value-of select="translate(level/@value,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/><xsl:apply-templates select="appender-ref" mode="comma"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:if test="appender-ref">
-                    <xsl:text>log4j.logger.<xsl:value-of select="@name"/>=</xsl:text><xsl:apply-templates select="appender-ref"/>
+                    <xsl:text>log4j.logger.<xsl:value-of select="@name"/>=</xsl:text><xsl:apply-templates select="appender-ref[1]" mode="noComma"/>
+                    <xsl:apply-templates select="appender-ref[position()>1]" mode="comma"/>
                 </xsl:if> 
             </xsl:otherwise>
         </xsl:choose>
         <xsl:text>&#10;&#10;</xsl:text>   
     </xsl:template>
     
-    <!--logger/appender-ref-->
-    <xsl:template match="//logger/appender-ref">
-        <xsl:text>, </xsl:text><xsl:value-of select="@ref"/>       
-    </xsl:template>
-    
     <!--category-->
     <xsl:template match="//category">
         <xsl:choose>
             <xsl:when test="level">
-                <xsl:text>log4j.logger.<xsl:value-of select="@name"/>=</xsl:text><xsl:value-of select="translate(level/@value,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/><xsl:apply-templates select="appender-ref"/>
+                <xsl:text>log4j.logger.<xsl:value-of select="@name"/>=</xsl:text><xsl:value-of select="translate(level/@value,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/><xsl:apply-templates select="appender-ref" mode="comma"/>
             </xsl:when>
             <xsl:when test="priority">
-                <xsl:text>log4j.logger.<xsl:value-of select="@name"/>=</xsl:text><xsl:value-of select="translate(priority/@value,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/><xsl:apply-templates select="appender-ref"/>
+                <xsl:text>log4j.logger.<xsl:value-of select="@name"/>=</xsl:text><xsl:value-of select="translate(priority/@value,'abcdefghijklmnopqrstuvwxyz','ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/><xsl:apply-templates select="appender-ref" mode="comma"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:if test="appender-ref">
-                    <xsl:text>log4j.logger.<xsl:value-of select="@name"/>=</xsl:text><xsl:apply-templates select="appender-ref"/>
+                    <xsl:text>log4j.logger.<xsl:value-of select="@name"/>=</xsl:text><xsl:apply-templates select="appender-ref[1]" mode="noComma"/>
+                    <xsl:apply-templates select="appender-ref[position()>1]" mode="comma"/>
                 </xsl:if> 
             </xsl:otherwise>
         </xsl:choose>  
         <xsl:text>&#10;&#10;</xsl:text>   
-    </xsl:template>
-    
-    <!--category/appender-ref-->
-    <xsl:template match="//category/appender-ref">
-        <xsl:text>, </xsl:text><xsl:value-of select="@ref"/>       
     </xsl:template>
   
     <!--category/param-->
     <xsl:template match="//category/param">
         <xsl:text>log4j.logger.</xsl:text><xsl:value-of select="../@name"/>.<xsl:value-of select="@name"/><xsl:text>=</xsl:text><xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>            
     </xsl:template>
-
+    
+    <!--//appender-ref s ciarkou-->
+    <xsl:template match="//appender-ref" mode="comma">
+        <xsl:text>, </xsl:text><xsl:value-of select="@ref"/>
+    </xsl:template>
+    
+    <!--//appender-ref bez ciarky-->
+    <xsl:template match="//appender-ref" mode="noComma">
+        <xsl:value-of select="@ref"/>
+    </xsl:template>
     
 </xsl:stylesheet>
