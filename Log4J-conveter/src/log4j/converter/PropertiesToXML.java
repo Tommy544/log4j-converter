@@ -156,7 +156,9 @@ public class PropertiesToXML {
             String currentAppenderPrefix = key;
             Element appender = doc.createElement("appender");
             String appenderName=key.substring(prefix.length());
-            appender.setAttribute(appenderName, properties.getProperty(key));
+            
+            appender.setAttribute("name",appenderName);
+            appender.setAttribute("class", properties.getProperty(key));
             
             while(it.hasNext()){
                 key = it.next();
@@ -174,7 +176,7 @@ public class PropertiesToXML {
 //                lastKey = mantainLastKey(processConnectionSource(properties,keys,currentAppenderPrefix,appender), lastKey);
                 lastKey = mantainLastKey(processLayout(properties,keys,currentAppenderPrefix,appender), lastKey);
                 lastKey = mantainLastKey(processAppenderRefs(properties,keys,currentAppenderPrefix,appender), lastKey);
-//                lastKey = mantainLastKey(processFilters(properties,keys,currentAppenderPrefix,appender), lastKey);
+                lastKey = mantainLastKey(processFilters(properties,keys,currentAppenderPrefix,appender), lastKey);
                 it=keys.tailSet(lastKey).iterator();
             }
             configurationElemnt.appendChild(appender);
@@ -196,6 +198,10 @@ public class PropertiesToXML {
             String loggerName=key.substring(prefix.length());
             logger.setAttribute("name", loggerName);
             if(null != parseLogger(properties.getProperty(key), logger)){
+                String additivity=properties.getProperty("log4j.additivity."+loggerName);
+                if(null!=additivity){
+                    logger.setAttribute("additivity", additivity);
+                }
                 configurationElemnt.appendChild(logger);
             }
         }
@@ -225,6 +231,28 @@ public class PropertiesToXML {
             }
         }
     }
+    
+    private void convertLoggerFactory(Properties properties, SortedSet<String> keys, Element configurationElemnt){
+        final String prefix = "log4j.loggerFactory";
+        Element factory=null;
+        for(String key : keys.tailSet(prefix)){
+            if(!key.startsWith(prefix)) break;
+            if(null==factory){
+                factory = doc.createElement("loggerFactory");
+                factory.setAttribute("class", key);
+            }else{
+                String paramPefix=prefix+".";
+                if(!key.startsWith(paramPefix)) break;
+                processParam(properties, key, paramPefix, factory);
+            }
+            
+            
+        }
+        if(null!=factory){
+            configurationElemnt.appendChild(factory);
+        }
+    }
+    
     /**
      * 
      * @param result    StreamResult do kterého se naplní výsledné xml
@@ -246,11 +274,14 @@ public class PropertiesToXML {
         convertAppenders(properties, keys, rootElement);
         
         //zkonvertuju loggery
-        //TODO additivity
         convertLoggers(properties,keys,rootElement);
         
         //zkonvertuju root loger
         convertRoot(properties,keys,rootElement);
+        
+        
+        //zkonvertuju LoggerFactory
+        convertLoggerFactory(properties, keys, rootElement);
         
         //naplním výsledek
         fillXMLResult(doc, result);
@@ -384,29 +415,29 @@ public class PropertiesToXML {
 
     private String processFilters(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
         final String prefix=currentAppenderPrefix+".filter";
-        for(String key :keys.tailSet(prefix)){//TODO iteratory
+        Iterator<String> it= keys.tailSet(prefix).iterator();
+        boolean hasKey=false;
+        String key="";
+        while(hasKey || it.hasNext()){//TODO iteratory
+            if(!hasKey) {
+                key=it.next();
+            }
             if(!key.startsWith(prefix)) {
                 return key;
             }
             
-            Element filter=null;
-            String filtrPrefix=key;
-            for(String fKey :keys.tailSet(filtrPrefix)){
-                if(!fKey.startsWith(filtrPrefix)) {
-                    return fKey;
+            String filtrPrefix=key+".";
+            Element filter = doc.createElement("filter");
+            filter.setAttribute("class", properties.getProperty(key));
+            appender.appendChild(filter);
+            
+            while(it.hasNext()){
+                key=it.next();
+                if(!key.startsWith(filtrPrefix)) {
+                    hasKey=true;
+                    break;
                 }
-
-                if(null==filter){
-                    if(key.equals(filtrPrefix)){
-                        filter = doc.createElement("filter");
-                        filter.setAttribute("class", properties.getProperty(key));
-                        appender.appendChild(filter);
-                    }else{
-                        //TODO nějakou vyjimku
-                    }
-                }else{
-                    processParam(properties, key, filtrPrefix+".", filter);
-                }
+                processParam(properties, key, filtrPrefix, filter);
             }
         }
         return null;
