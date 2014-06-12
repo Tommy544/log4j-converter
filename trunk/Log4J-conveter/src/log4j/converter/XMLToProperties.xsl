@@ -96,7 +96,6 @@
     </xsl:template>
     
     <!--appender/errorhandler/root-ref-->
-    <!--???? root-ref je empty - na properties specifikacii pisu, ze true alebo false-->
     <xsl:template match="//appender/errorHandler/root-ref">
         <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/><xsl:text>.errorHandler.root-ref=true</xsl:text><xsl:text>&#10;</xsl:text>        
     </xsl:template>
@@ -120,11 +119,11 @@
     <xsl:template match="//appender/rollingPolicy">
         <xsl:choose>
             <xsl:when test="../rollingPolicy[@name]">
-                <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../@name"/>.RollingPolicy.<xsl:value-of select="@name"/>=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>  
+                <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../@name"/>.rollingPolicy.<xsl:value-of select="@name"/>=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>  
                 <xsl:apply-templates select="param" mode="name"/>
             </xsl:when>
             <xsl:otherwise>
-                <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../@name"/>.RollingPolicy=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>  
+                <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../@name"/>.rollingPolicy=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>  
                 <xsl:apply-templates select="param" mode="noName"/>
             </xsl:otherwise> 
         </xsl:choose>
@@ -132,24 +131,24 @@
     
     <!--appender/rollingPolicy/param mode:name-->
     <xsl:template match="//appender/rollingPolicy/param" mode="name">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.RollingPolicy.<xsl:value-of select="../@name"/>.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.rollingPolicy.<xsl:value-of select="../@name"/>.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
     </xsl:template>
     
     <!--appender/rollingPolicy/param mode:noName-->
     <xsl:template match="//appender/rollingPolicy/param" mode="noName">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.RollingPolicy.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.rollingPolicy.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
     </xsl:template>
     
     <!--appender/triggeringPolicy-->
     <xsl:template match="//appender/triggeringPolicy">
         <xsl:choose>
             <xsl:when test="../triggeringPolicy[@name]">
-                <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../@name"/>.TriggeringPolicy.<xsl:value-of select="@name"/>=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>      
+                <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../@name"/>.triggeringPolicy.<xsl:value-of select="@name"/>=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>      
                <xsl:apply-templates select="param" mode="name"/> 
                <xsl:apply-templates select="filter" mode="name"/>   
             </xsl:when> 
             <xsl:otherwise>
-                <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../@name"/>.TriggeringPolicy=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>      
+                <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../@name"/>.triggeringPolicy=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>      
                 <xsl:apply-templates select="param" mode="noName"/> 
                 <xsl:apply-templates select="filter" mode="noName"/>                  
             </xsl:otherwise>
@@ -158,57 +157,57 @@
     
     <!--appender/triggeringPolicy/param mode:noName-->
     <xsl:template match="//appender/triggeringPolicy/param" mode="noName">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.TriggeringPolicy.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.triggeringPolicy.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
     </xsl:template>
     
     <!--appender/triggeringPolicy/param mode:name-->
     <xsl:template match="//appender/triggeringPolicy/param" mode="name">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.TriggeringPolicy.<xsl:value-of select="../@name"/>.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.triggeringPolicy.<xsl:value-of select="../@name"/>.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
     </xsl:template>
     
     <!--appender/triggeringPolicy/filter mode:noName-->
     <xsl:template match="//appender/triggeringPolicy/filter" mode="noName">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.TriggeringPolicy.filter.ID=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>     
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.triggeringPolicy.filter.ID=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>     
         <xsl:apply-templates select="param" mode="noName"/>  
     </xsl:template>
     
     <!--appender/triggeringPolicy/filter mode:name-->
     <xsl:template match="//appender/triggeringPolicy/filter" mode="name">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.TriggeringPolicy.<xsl:value-of select="../@name"/>.filter.ID=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>     
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.triggeringPolicy.<xsl:value-of select="../@name"/>.filter.ID=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>     
         <xsl:apply-templates select="param" mode="name"/>  
     </xsl:template>
     
     <!--appender/triggeringPolicy/filter/param mode:noName-->
     <xsl:template match="//appender/triggeringPolicy/filter/param" mode="noName">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../../@name"/>.TriggeringPolicy.filter.ID.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../../@name"/>.triggeringPolicy.filter.ID.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
     </xsl:template>-->
     
     <!--appender/triggeringPolicy/filter/param mode:noName-->
     <xsl:template match="//appender/triggeringPolicy/filter/param" mode="name">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../../@name"/>.TriggeringPolicy.<xsl:value-of select="../../@name"/>.filter.ID.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../../@name"/>.triggeringPolicy.<xsl:value-of select="../../@name"/>.filter.ID.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
     </xsl:template>-->
     
     <!--appender/connectionSource-->
     <xsl:template match="//appender/connectionSource">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../@name"/>.ConnectionSource=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>  
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../@name"/>.connectionSource=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>  
         <xsl:apply-templates select="dataSource"/>   
         <xsl:apply-templates select="param"/> 
     </xsl:template>
     
     <!--appender/connectionSource/param-->
     <xsl:template match="//appender/connectionSource/param">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.ConnectionSource.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.connectionSource.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
     </xsl:template>
     
     <!--appender/connectionSource/dataSource-->
     <xsl:template match="//appender/connectionSource/dataSource">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.ConnectionSource.DataSource=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>  
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.connectionSource.DataSource=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>  
         <xsl:apply-templates select="param"/> 
     </xsl:template>
     
     <!--appender/connectionSource/dataSource/param-->
     <xsl:template match="//appender/connectionSource/dataSource/param">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../../@name"/>.ConnectionSource.DataSource.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../../@name"/>.connectionSource.DataSource.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
     </xsl:template>
     
     <!--appender/layout-->
@@ -254,19 +253,19 @@
     
     <!--plugin/connectionSource-->
     <xsl:template match="//plugin/connectionSource">
-        <xsl:text>log4j.plugin.</xsl:text><xsl:value-of select="../@name"/>.ConnectionSource=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>  
+        <xsl:text>log4j.plugin.</xsl:text><xsl:value-of select="../@name"/>.connectionSource=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>  
         <xsl:apply-templates select="dataSource"/>   
         <xsl:apply-templates select="param"/> 
     </xsl:template>
     
     <!--plugin/connectionSource/param-->
     <xsl:template match="//plugin/connectionSource/param">
-        <xsl:text>log4j.plugin.</xsl:text><xsl:value-of select="../../@name"/>.ConnectionSource.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
+        <xsl:text>log4j.plugin.</xsl:text><xsl:value-of select="../../@name"/>.connectionSource.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>     
     </xsl:template>
     
     <!--plugin/connectionSource/dataSource-->
     <xsl:template match="//plugin/connectionSource/dataSource">
-        <xsl:text>log4j.plugin.</xsl:text><xsl:value-of select="../../@name"/>.ConnectionSource.DataSource=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>  
+        <xsl:text>log4j.plugin.</xsl:text><xsl:value-of select="../../@name"/>.connectionSource.DataSource=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>  
         <xsl:apply-templates select="param"/> 
     </xsl:template>
     
