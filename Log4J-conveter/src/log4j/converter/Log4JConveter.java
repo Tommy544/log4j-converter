@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package log4j.converter;
 
 import java.io.IOException;
@@ -18,7 +14,14 @@ import org.xml.sax.SAXException;
 public class Log4JConveter {
 
     public static final Logger logger = Logger.getLogger(Log4JConveter.class.getName());
-
+    
+    /**
+     * Gets file extension
+     * 
+     * @param fileName file name
+     * 
+     * @return file extension
+     */
     public static String getFileExtension(String fileName) {
         String[] strings = fileName.split("\\.");
         if (strings.length <= 1) {
@@ -31,7 +34,10 @@ public class Log4JConveter {
     }
 
     /**
+     * Main method
+     * 
      * @param args the command line arguments
+     * @throws java.io.IOException
      */
     public static void main(String[] args) throws IOException {
         if (args.length == 0) {
