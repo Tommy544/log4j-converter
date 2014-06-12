@@ -67,7 +67,11 @@ public class Log4JConveter {
                 break;
             case "properties":
                 PropertiesToXML propertiesToXml = new PropertiesToXML(args[0]);
+                try{
                 propertiesToXml.Convert();
+                } catch (IOException | ParserConfigurationException | TransformerException ex) {
+                    Logger.getLogger(PropertiesToXML.class.getName()).log(Level.SEVERE, null, ex);
+                }
                 break;
             default:
                 System.err.println("File name must end with .xml or .properties");
