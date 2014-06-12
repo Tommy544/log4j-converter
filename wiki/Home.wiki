@@ -20,3 +20,9 @@ Cílem projektu je vytvořit převaděč log4j konfigurace z formátu XML do pro
   * *[LuciaStubnova Lucia Štubňová]*
     * vývojár
     * stubnovalucia@gmail.com
+
+== Aplikácia ==
+
+[Analysis#Usage Návod na používanie (EN)]
+
+[Analysis#Documentation Dokumentácia (EN)]
