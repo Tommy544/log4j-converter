@@ -6,8 +6,16 @@
 
 package log4j.converter;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -15,6 +23,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.logging.StreamHandler;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -168,4 +177,86 @@ public class XMLToPropertiesTest {
             assertNotNull("Attribute \"name\" is required and must be specified for element type \"appender\".", ex.getMessage());
         }
     }
+    
+    @Test
+    public void testXmlRootWithLevel(){
+        try {
+            xmlToProperties = new XMLToProperties("test/log4j/converter/resources/rootWithLevelXML.xml");
+        } catch (IOException ex) {
+            Logger.getLogger(XMLToPropertiesTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail("rootWithLevel.xml file not found!");
+        }
+        try {
+            xmlToProperties.Convert("test/log4j/converter/resources/outputProperties.properties");
+        } catch (TransformerException ex) {
+            Logger.getLogger(XMLToPropertiesTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail("Error during the transformation.");
+        }
+        
+        try {
+            BufferedReader output = new BufferedReader(new FileReader("test/log4j/converter/resources/outputProperties.properties"));
+            String s;
+           
+            List<String> expectedProperties = new ArrayList<>();
+            expectedProperties.add("log4j.reset=false");
+            expectedProperties.add("log4j.rootLogger=INFO");
+            List<String> outputProperties = new ArrayList<>();
+            
+            while ((s = output.readLine()) != null) {
+                if(!(s.isEmpty())){
+                    outputProperties.add(s);
+                }
+            }
+            output.close();          
+            assertEquals(expectedProperties,outputProperties);
+        } catch (IOException ex) {
+                Logger.getLogger(XMLToPropertiesTest.class.getName()).log(Level.SEVERE, null, ex);
+                fail("I/O error.");
+        }  
+                    
+        };
+    
+    @Test
+    public void testXmlConfigurationAttributes(){
+        try {
+            xmlToProperties = new XMLToProperties("test/log4j/converter/resources/configurationAttributesXML.xml");
+        } catch (IOException ex) {
+            Logger.getLogger(XMLToPropertiesTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail("rootWithLevel.xml file not found!");
+        }
+        try {
+            xmlToProperties.Convert("test/log4j/converter/resources/outputProperties.properties");
+        } catch (TransformerException ex) {
+            Logger.getLogger(XMLToPropertiesTest.class.getName()).log(Level.SEVERE, null, ex);
+            fail("Error during the transformation.");
+        }
+        
+        try {
+            BufferedReader output = new BufferedReader(new FileReader("test/log4j/converter/resources/outputProperties.properties"));
+            String s;
+           
+            List<String> expectedProperties = new ArrayList<>();
+            expectedProperties.add("log4j.debug=true");
+            expectedProperties.add("log4j.threshold=all");
+            expectedProperties.add("log4j.reset=true");
+            expectedProperties.add("log4j.rootLogger=INFO");
+            List<String> outputProperties = new ArrayList<>();
+            
+            while ((s = output.readLine()) != null) {
+                if(!(s.isEmpty())){
+                    outputProperties.add(s);
+                }
+            }
+            output.close();          
+            assertEquals(expectedProperties,outputProperties);
+        } catch (IOException ex) {
+                Logger.getLogger(XMLToPropertiesTest.class.getName()).log(Level.SEVERE, null, ex);
+                fail("I/O error.");
+        }  
+                    
+    };
+    
+    
+        
+    
 }
