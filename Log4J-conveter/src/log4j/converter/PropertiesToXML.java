@@ -31,7 +31,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * 
- * @author Heno
+ * @author Michal
  * 
  * Converts Log4J properties to XML
  */
@@ -47,8 +47,7 @@ public class PropertiesToXML {
      * @param inputFile input file with Log4J properties
      * @throws java.io.IOException
      */
-    public PropertiesToXML(String inputFile) throws IOException
-    {
+    public PropertiesToXML(String inputFile) throws IOException{
         if (! new File(inputFile).isFile())
             throw new IOException("Input file does not exist");
         
@@ -58,8 +57,7 @@ public class PropertiesToXML {
     /**
      * Prints to Standard output
      */
-    public void Convert()
-    {
+    public void Convert(){
         try {
             StreamResult sr=new StreamResult(new StringWriter());
             doConversion(sr);
@@ -71,10 +69,11 @@ public class PropertiesToXML {
     }
     
     /**
-     * @param outputFile Log4J XML output file
+     * Prints to file
+     * 
+     * @param outputFile output XML file
      */
-    public void Convert(String outputFile)
-    {
+    public void Convert(String outputFile){
         File output= new File(outputFile);
         try (FileOutputStream fs = new FileOutputStream(output)) {
             StreamResult sr=new StreamResult(fs);
@@ -87,6 +86,11 @@ public class PropertiesToXML {
         }
     }
     
+    /**
+    * Loads properties from input file to data structure
+    * 
+    * @return properties
+    */
     private Properties loadProperties() throws IOException{
         InputStream source = new FileInputStream(inputFile);
         Properties props = new Properties();
@@ -94,13 +98,22 @@ public class PropertiesToXML {
         return props;
     }
     
+    /**
+    * Creates empty new org.​w3c.​dom.Document
+    * 
+    * @return empty DOM document
+    */
     private Document createNewDocument() throws ParserConfigurationException{
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         return builder.newDocument();
     }
+    
     /**
-     * Napnlní result daty z dokumentu doc 
+     * Fills StreamResult data from Document
+     * 
+     * @param doc   DOM document
+     * @param result    results
      */
     private StreamResult fillXMLResult(Document doc, StreamResult result) throws TransformerConfigurationException, TransformerException{
         TransformerFactory tf = TransformerFactory.newInstance();
@@ -112,6 +125,13 @@ public class PropertiesToXML {
         return result;
     }
     
+    /**
+    * Processes properties configuration
+    * 
+    * @param properties log4j properties
+    * @param keys   sorted properties keys
+    * @return   root tag of document
+    */
     private Element convertConfig(Properties properties, SortedSet<String> keys){
         Element configurationElement = doc.createElement("log4j:configuration");
         configurationElement.setAttribute("xmlns:log4j", "http://jakarta.apache.org/log4j/");
@@ -125,6 +145,13 @@ public class PropertiesToXML {
         return configurationElement;
     }
     
+    /**
+    * Processes Renderer classes and appends them to root tag
+    * 
+    * @param properties log4j properties
+    * @param keys   sorted properties keys
+    * @param configurationElemnt    root tag of document
+    */
     private void convertRenderes(Properties properties, SortedSet<String> keys, Element configurationElemnt){
         final String prefix = "log4j.renderer.";
         SortedSet<String> logerKeys=keys.tailSet(prefix);
@@ -138,6 +165,13 @@ public class PropertiesToXML {
         }
     }
     
+    /**
+    * Processes Appender classes and appends them to root tag
+    * 
+    * @param properties log4j properties
+    * @param keys   sorted properties keys
+    * @param configurationElemnt    root tag of document
+    */
     private void convertAppenders(Properties properties, SortedSet<String> keys, Element configurationElemnt){
         final String prefix = "log4j.appender.";
         SortedSet<String> logerKeys = keys.tailSet(prefix);
@@ -231,6 +265,13 @@ public class PropertiesToXML {
         }
     }
     
+    /**
+     * Processes loggerFactory and appends them to root tag
+     * 
+     * @param properties log4j properties
+     * @param keys   sorted properties keys
+     * @param configurationElemnt    root tag of document
+     */
     private void convertLoggerFactory(Properties properties, SortedSet<String> keys, Element configurationElemnt){
         final String prefix = "log4j.loggerFactory";
         Element factory=null;
@@ -255,6 +296,10 @@ public class PropertiesToXML {
     /**
      * 
      * @param result    StreamResult do kterého se naplní výsledné xml
+     * 
+     * @throws java.io.IOException
+     * @throws javax.xml.transform.TransformerConfigurationException
+     * @throws javax.xml.parsers.ParserConfigurationException
      */
     protected void doConversion(StreamResult result) throws IOException, TransformerConfigurationException, TransformerException, ParserConfigurationException{
         Properties properties = loadProperties();
@@ -317,11 +362,26 @@ public class PropertiesToXML {
         return logger;
     }
     
+    /**
+     * 
+     * @param levelValue level value
+     * 
+     * @return true if value is equal to one of supported values, otherwise false
+     */
     private boolean isStandartLevelValue(String levelValue){
         return levelValue.matches("all|trace|debug|info|warn|error|fatal|off|null");
     }
     //<editor-fold defaultstate="collapsed" desc="Processing errorHandlers">
     
+    /**
+     * Processes error handlers and appends them to root tag
+     * 
+     * @param properties log4j properties
+     * @param keys   sorted properties keys
+     * @param configurationElemnt    root tag of document
+     * 
+     * @return 
+     */
     private String processErrorHandler(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
         final String prefix=currentAppenderPrefix+".errorhandler";
         Element hander;
@@ -341,6 +401,15 @@ public class PropertiesToXML {
         return null;
     }
     
+    /**
+     * 
+     * @param properties log4j properties
+     * @param keys   sorted properties keys
+     * @param handlerPrefix
+     * @param configurationElemnt    root tag of document
+     * 
+     * @return 
+     */
     private String processRootRef(Properties properties, SortedSet<String> keys, String handlerPrefix, Element element){
         String prefix=handlerPrefix+".root-ref";
         for(String key :keys.tailSet(prefix)){
@@ -354,6 +423,15 @@ public class PropertiesToXML {
         return null;
     }
     
+    /**
+     * 
+     * @param properties log4j properties
+     * @param keys   sorted properties keys
+     * @param handlerPrefix
+     * @param configurationElemnt    root tag of document
+     * 
+     * @return 
+     */
     private String processLoggerRefs(Properties properties, SortedSet<String> keys, String handlerPrefix, Element element){
         String prefix=handlerPrefix+".logger-ref";
         for(String key :keys.tailSet(prefix)){
@@ -368,7 +446,18 @@ public class PropertiesToXML {
     }
     
     //</editor-fold>
-
+    
+    /**
+     * 
+     * @param properties log4j properties
+     * @param keys   sorted properties keys
+     * @param basePrefix
+     * @param element
+     * @param position
+     * @param ignored
+     * 
+     * @return 
+     */
     private String processParams(Properties properties, SortedSet<String> keys, String basePrefix, Element element, int position, String[] ignored) {
         String prefix=basePrefix+".";
         NodeList childNodes = element.getChildNodes();
@@ -394,6 +483,14 @@ public class PropertiesToXML {
         }
         return null;
     }
+    
+     /**
+     * 
+     * @param properties log4j properties
+     * @param key   properties key
+     * @param prefix    key name prefix
+     * @param element   element to append new param tags
+     */
     private void processParam(Properties properties, String key, String prefix, Element element){
             Element param = doc.createElement("param");
             param.setAttribute("name", key.substring(prefix.length()));
@@ -401,6 +498,15 @@ public class PropertiesToXML {
             element.appendChild(param);
     }
 
+    /**
+     * 
+     * @param properties log4j properties
+     * @param keys   sorted properties keys
+     * @param currentAppenderPrefix    key name appender prefix
+     * @param appender  appender tag to append new rollingPolicy tags
+     * 
+     * @return 
+     */
     private String processRollingPolicy(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
         final String prefix=currentAppenderPrefix+".rollingPolicy";
         SortedSet<String> myKeys=keys.tailSet(prefix);
@@ -420,6 +526,15 @@ public class PropertiesToXML {
         }
     }
 
+    /**
+     * 
+     * @param properties log4j properties
+     * @param keys   sorted properties keys
+     * @param currentAppenderPrefix    key name appender prefix
+     * @param appender  appender tag to append new triggeringPolicy tags
+     * 
+     * @return 
+     */
     private String processTriggeringPolicy(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
         final String prefix=currentAppenderPrefix+".triggeringPolicy";
         SortedSet<String> myKeys=keys.tailSet(prefix);
@@ -442,6 +557,15 @@ public class PropertiesToXML {
         }
     }
 
+    /**
+     * 
+     * @param properties log4j properties
+     * @param keys   sorted properties keys
+     * @param currentAppenderPrefix    key name appender prefix
+     * @param appender  appender tag to append new connectionSource tags
+     * 
+     * @return 
+     */
     private String processConnectionSource(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
         final String prefix=currentAppenderPrefix+".connectionSource";
         SortedSet<String> myKeys=keys.tailSet(prefix);
@@ -463,6 +587,15 @@ public class PropertiesToXML {
         }
     }
 
+    /**
+     * 
+     * @param properties log4j properties
+     * @param keys   sorted properties keys
+     * @param currentAppenderPrefix    key name appender prefix
+     * @param appender  appender tag to append new dataSource tags
+     * 
+     * @return 
+     */
     private String processDataSource(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
         final String prefix=currentAppenderPrefix+".dataSource";
         SortedSet<String> myKeys=keys.tailSet(prefix);
@@ -483,6 +616,15 @@ public class PropertiesToXML {
         }
     }
 
+    /**
+     * 
+     * @param properties log4j properties
+     * @param keys   sorted properties keys
+     * @param currentAppenderPrefix    key name appender prefix
+     * @param appender  appender tag to append new filter tags
+     * 
+     * @return 
+     */
     private String processFilters(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
         final String prefix=currentAppenderPrefix+".filter";
         Iterator<String> it= keys.tailSet(prefix).iterator();
@@ -514,6 +656,15 @@ public class PropertiesToXML {
     
     }
     
+    /**
+     * 
+     * @param properties log4j properties
+     * @param keys   sorted properties keys
+     * @param currentAppenderPrefix    key name appender prefix
+     * @param appender  appender tag to append new layout tags
+     * 
+     * @return 
+     */
     private String processLayout(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
         final String prefix=currentAppenderPrefix+".layout";
         Element layout=null;
@@ -537,7 +688,15 @@ public class PropertiesToXML {
         return null;
     }
 
-    
+    /**
+     * 
+     * @param properties log4j properties
+     * @param keys   sorted properties keys
+     * @param handlerPrefix    key name appender prefix
+     * @param element  appender tag to append new appender-ref tags
+     * 
+     * @return 
+     */
     private String processAppenderRefs(Properties properties, SortedSet<String> keys, String handlerPrefix, Element element){
         String prefix=handlerPrefix+".appender-ref";
         for(String key :keys.tailSet(prefix)){
@@ -550,12 +709,14 @@ public class PropertiesToXML {
         }
         return null;
     }
-/**
- * 
- * @param newKey new key
- * @param lastKey currently biggest key
- * @return the biggest key
- */
+    
+    /**
+    * 
+    * @param newKey new key
+    * @param lastKey currently biggest key
+    * 
+    * @return the biggest key
+    */
     private String mantainLastKey(String newKey, String lastKey) {
         if(null==newKey) return lastKey;
         if(newKey.compareTo(lastKey)>0){
