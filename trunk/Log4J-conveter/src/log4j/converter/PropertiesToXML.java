@@ -163,14 +163,16 @@ public class PropertiesToXML {
                     unprocesedKey=true;
                     break;
                 }
-                String lastKey="";
+                String lastKey=key;
                 lastKey = mantainLastKey(processErrorHandler(properties,keys,currentAppenderPrefix,appender),lastKey);
                 lastKey = mantainLastKey(processParams(properties,keys,currentAppenderPrefix,appender,1,new String[]{"",
-                "errorHandler", //"rollingPolicy", "triggeringPolicy", "connectionSource",
+                "errorhandler", "rollingPolicy", "triggeringPolicy", "connectionSource",
                 "layout", "filter", "appender-ref"}), lastKey);
-//                lastKey = mantainLastKey(processRollingPolicy(properties,keys,currentAppenderPrefix,appender), lastKey);
-//                lastKey = mantainLastKey(processTriggeringPolicy(properties,keys,currentAppenderPrefix,appender), lastKey);
-//                lastKey = mantainLastKey(processConnectionSource(properties,keys,currentAppenderPrefix,appender), lastKey);
+                //TODO otestovat tyhle tři
+                lastKey = mantainLastKey(processRollingPolicy(properties,keys,currentAppenderPrefix,appender), lastKey);
+                lastKey = mantainLastKey(processTriggeringPolicy(properties,keys,currentAppenderPrefix,appender), lastKey);
+                lastKey = mantainLastKey(processConnectionSource(properties,keys,currentAppenderPrefix,appender), lastKey);
+                //
                 lastKey = mantainLastKey(processLayout(properties,keys,currentAppenderPrefix,appender), lastKey);
                 lastKey = mantainLastKey(processAppenderRefs(properties,keys,currentAppenderPrefix,appender), lastKey);
                 lastKey = mantainLastKey(processFilters(properties,keys,currentAppenderPrefix,appender), lastKey);
@@ -335,7 +337,7 @@ public class PropertiesToXML {
             processRootRef(properties, myKeys, prefix, hander);
             processLoggerRefs(properties, myKeys, prefix, hander);
             processAppenderRefs(properties, myKeys, prefix, hander);
-            processParams(properties, myKeys, prefix+".", hander, 0, new String[]{"",".root-ref",".logger-ref",".appender-ref"});
+            processParams(properties, myKeys, prefix, hander, 0, new String[]{"","root-ref","logger-ref","appender-ref"});
         return null;
     }
     
@@ -367,7 +369,8 @@ public class PropertiesToXML {
     
     //</editor-fold>
 
-    private String processParams(Properties properties, SortedSet<String> keys, String prefix, Element element, int position, String[] ignored) {
+    private String processParams(Properties properties, SortedSet<String> keys, String basePrefix, Element element, int position, String[] ignored) {
+        String prefix=basePrefix+".";
         NodeList childNodes = element.getChildNodes();
         Node refChild = childNodes.item(position);
         for(String key :keys.tailSet(prefix)){
@@ -377,9 +380,9 @@ public class PropertiesToXML {
             String name=key.substring(prefix.length());
             boolean isParam=true;
             for(String s : ignored){
-                if(key.startsWith(s)){
+                if(name.split("\\.")[0].equals(s)){
                     isParam=false;
-                    continue;
+                    break;
                 }
             }
             if(isParam) {
@@ -398,17 +401,87 @@ public class PropertiesToXML {
             element.appendChild(param);
     }
 
-//    private String processRollingPolicy(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    private String processTriggeringPolicy(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    private String processConnectionSource(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
+    private String processRollingPolicy(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
+        final String prefix=currentAppenderPrefix+".rollingPolicy";
+        SortedSet<String> myKeys=keys.tailSet(prefix);
+        if(myKeys.isEmpty()){
+           return null; 
+        }else{
+            String key=myKeys.first();
+            if(key.equals(prefix)){
+                Element rollingPolicy= doc.createElement("rollingPolicy");
+                rollingPolicy.setAttribute("class", properties.getProperty(key));
+                appender.appendChild(rollingPolicy);
+                return processParams(properties, keys, prefix, rollingPolicy, -1, new String[]{});
+            }else{
+                //nemam jak rozlišit jmeno od parametru =>
+                return null;
+            }
+        }
+    }
+
+    private String processTriggeringPolicy(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
+        final String prefix=currentAppenderPrefix+".triggeringPolicy";
+        SortedSet<String> myKeys=keys.tailSet(prefix);
+        if(myKeys.isEmpty()){
+           return null; 
+        }else{
+            String key=myKeys.first();
+            if(key.equals(prefix)){
+                Element triggeringPolicy = doc.createElement("triggeringPolicy");
+                triggeringPolicy.setAttribute("class", properties.getProperty(key));
+                String lastKey = key;
+                lastKey = mantainLastKey(processFilters(properties, myKeys, prefix, triggeringPolicy), lastKey);
+                lastKey = mantainLastKey(processParams(properties, keys, prefix, triggeringPolicy, -1, new String[]{"filter"}), lastKey);
+                appender.appendChild(triggeringPolicy);
+                return lastKey;
+            }else{
+                //nemam jak jednoduše rozlišit jmeno od parametru => pojmenovane ignoruju
+                return null;
+            }
+        }
+    }
+
+    private String processConnectionSource(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
+        final String prefix=currentAppenderPrefix+".connectionSource";
+        SortedSet<String> myKeys=keys.tailSet(prefix);
+        if(myKeys.isEmpty()){
+           return null; 
+        }else{
+            String key=myKeys.first();
+            if(key.equals(prefix)){
+                Element connectionSource = doc.createElement("connectionSource");
+                connectionSource.setAttribute("class", properties.getProperty(key));
+                String lastKey = key;
+                lastKey = mantainLastKey(processDataSource(properties, myKeys, prefix, connectionSource), lastKey);
+                lastKey = mantainLastKey(processParams(properties, keys, prefix, connectionSource, -1, new String[]{"filter"}), lastKey);
+                appender.appendChild(connectionSource);
+                return lastKey;
+            }else{
+                return key;
+            }
+        }
+    }
+
+    private String processDataSource(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
+        final String prefix=currentAppenderPrefix+".dataSource";
+        SortedSet<String> myKeys=keys.tailSet(prefix);
+        if(myKeys.isEmpty()){
+           return null; 
+        }else{
+            String key=myKeys.first();
+            if(key.equals(prefix)){
+                Element dataSource = doc.createElement("dataSource");
+                dataSource.setAttribute("class", properties.getProperty(key));
+                String lastKey = key;
+                lastKey = mantainLastKey(processParams(properties, keys, prefix, dataSource, -1, new String[]{}), lastKey);
+                appender.appendChild(dataSource);
+                return lastKey;
+            }else{
+                return key;
+            }
+        }
+    }
 
     private String processFilters(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
         final String prefix=currentAppenderPrefix+".filter";
@@ -477,7 +550,12 @@ public class PropertiesToXML {
         }
         return null;
     }
-
+/**
+ * 
+ * @param newKey new key
+ * @param lastKey currently biggest key
+ * @return the biggest key
+ */
     private String mantainLastKey(String newKey, String lastKey) {
         if(null==newKey) return lastKey;
         if(newKey.compareTo(lastKey)>0){
