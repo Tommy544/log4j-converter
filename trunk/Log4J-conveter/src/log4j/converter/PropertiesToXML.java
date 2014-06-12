@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Iterator;
 import java.util.Properties;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
@@ -62,19 +61,11 @@ public class PropertiesToXML {
     public void Convert()
     {
         try {
-            // TODO
-            
             StreamResult sr=new StreamResult(new StringWriter());
             doConversion(sr);
             StringWriter wr= (StringWriter) sr.getWriter();
             System.out.print(wr.getBuffer().toString());
-        } catch (IOException ex) {
-            Logger.getLogger(PropertiesToXML.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (TransformerConfigurationException ex) {
-            Logger.getLogger(PropertiesToXML.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (TransformerException ex) {
-            Logger.getLogger(PropertiesToXML.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ParserConfigurationException ex) {
+        } catch (IOException | ParserConfigurationException | TransformerException ex) {
             Logger.getLogger(PropertiesToXML.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -84,7 +75,6 @@ public class PropertiesToXML {
      */
     public void Convert(String outputFile)
     {
-        // TODO
         File output= new File(outputFile);
         try (FileOutputStream fs = new FileOutputStream(output)) {
             StreamResult sr=new StreamResult(fs);
@@ -92,13 +82,7 @@ public class PropertiesToXML {
             fs.flush();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(PropertiesToXML.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(PropertiesToXML.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (TransformerConfigurationException ex) {
-            Logger.getLogger(PropertiesToXML.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (TransformerException ex) {
-            Logger.getLogger(PropertiesToXML.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ParserConfigurationException ex) {
+        } catch (IOException | ParserConfigurationException | TransformerException ex) {
             Logger.getLogger(PropertiesToXML.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -126,6 +110,19 @@ public class PropertiesToXML {
         transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, "log4j.dtd");
         transformer.transform(new DOMSource(doc), result);
         return result;
+    }
+    
+    private Element convertConfig(Properties properties, SortedSet<String> keys){
+        Element configurationElement = doc.createElement("log4j:configuration");
+        configurationElement.setAttribute("xmlns:log4j", "http://jakarta.apache.org/log4j/");
+        if(keys.contains("log4j.threshold")){
+            configurationElement.setAttribute("threshold", properties.getProperty("log4j.threshold").toLowerCase());
+        }
+        
+        if(keys.contains("log4j.debug")){
+            configurationElement.setAttribute("debug", properties.getProperty("log4j.debug").toLowerCase());
+        }
+        return configurationElement;
     }
     
     private void convertRenderes(Properties properties, SortedSet<String> keys, Element configurationElemnt){
@@ -262,26 +259,26 @@ public class PropertiesToXML {
         
         //vyrobým nový dokument s kořenovým elementem
         doc = createNewDocument();
-        Element rootElement = doc.createElement("log4j:configuration");
-        rootElement.setAttribute("xmlns:log4j", "http://jakarta.apache.org/log4j/");
-        doc.appendChild(rootElement);
         
         SortedSet<String> keys = new TreeSet(properties.keySet());
         
-        //TODO otestovat renderery
-        convertRenderes(properties,keys,rootElement);
+        Element configurationElement = convertConfig(properties, keys);
+        doc.appendChild(configurationElement);
         
-        convertAppenders(properties, keys, rootElement);
+        //TODO otestovat renderery
+        convertRenderes(properties,keys,configurationElement);
+        
+        convertAppenders(properties, keys, configurationElement);
         
         //zkonvertuju loggery
-        convertLoggers(properties,keys,rootElement);
+        convertLoggers(properties,keys,configurationElement);
         
         //zkonvertuju root loger
-        convertRoot(properties,keys,rootElement);
+        convertRoot(properties,keys,configurationElement);
         
         
         //zkonvertuju LoggerFactory
-        convertLoggerFactory(properties, keys, rootElement);
+        convertLoggerFactory(properties, keys, configurationElement);
         
         //naplním výsledek
         fillXMLResult(doc, result);
@@ -418,7 +415,7 @@ public class PropertiesToXML {
         Iterator<String> it= keys.tailSet(prefix).iterator();
         boolean hasKey=false;
         String key="";
-        while(hasKey || it.hasNext()){//TODO iteratory
+        while(hasKey || it.hasNext()){
             if(!hasKey) {
                 key=it.next();
             }
