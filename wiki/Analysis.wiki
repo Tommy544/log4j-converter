@@ -25,17 +25,17 @@ The conversion from .xml to .properties is done using Extensible Stylesheet Lang
 
 == Classes ==
 
-* [Log4JConveter Log4JConveter]
+    * [Log4JConveter Log4JConveter]
 
-* [XMLToProperties XMLToProperties]
+    * [XMLToProperties XMLToProperties]
 
-* [PropertiesToXML PropertiesToXML]
+    * [PropertiesToXML PropertiesToXML]
 
 == Test classes ==
 
-* PropertiesToXMLTest
+    * PropertiesToXMLTest
 
-* XMLToPropertiesTest
+    * XMLToPropertiesTest
 
 = Class Diagram =
 
