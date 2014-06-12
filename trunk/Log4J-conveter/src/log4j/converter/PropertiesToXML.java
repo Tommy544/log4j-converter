@@ -57,15 +57,12 @@ public class PropertiesToXML {
     /**
      * Prints to Standard output
      */
-    public void Convert(){
-        try {
-            StreamResult sr=new StreamResult(new StringWriter());
-            doConversion(sr);
-            StringWriter wr= (StringWriter) sr.getWriter();
-            System.out.print(wr.getBuffer().toString());
-        } catch (IOException | ParserConfigurationException | TransformerException ex) {
-            Logger.getLogger(PropertiesToXML.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void Convert() throws IOException, ParserConfigurationException, TransformerException{
+        
+        StreamResult sr=new StreamResult(new StringWriter());
+        doConversion(sr);
+        StringWriter wr= (StringWriter) sr.getWriter();
+        System.out.print(wr.getBuffer().toString());
     }
     
     /**
@@ -73,16 +70,12 @@ public class PropertiesToXML {
      * 
      * @param outputFile output XML file
      */
-    public void Convert(String outputFile){
+    public void Convert(String outputFile) throws IOException, ParserConfigurationException, TransformerException{
         File output= new File(outputFile);
         try (FileOutputStream fs = new FileOutputStream(output)) {
             StreamResult sr=new StreamResult(fs);
             doConversion(sr);
             fs.flush();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(PropertiesToXML.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException | ParserConfigurationException | TransformerException ex) {
-            Logger.getLogger(PropertiesToXML.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
