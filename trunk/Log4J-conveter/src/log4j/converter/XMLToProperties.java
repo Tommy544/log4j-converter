@@ -27,12 +27,25 @@ import org.xml.sax.SAXParseException;
 public class XMLToProperties {
 
     public static final Logger logger = Logger.getLogger(XMLToProperties.class.getName());
+    
+    /**
+     * Input XML file path
+     */
     private String inputFile;
+    
+    /**
+     * XSL file path
+     */
     private final String xslFile = "src/log4j/converter/XMLToProperties.xsl";
+    
     private boolean foundError = false;
 
     /**
      * Validates input XML file using official log4j.dtd
+     * 
+     * @throws javax.xml.parsers.ParserConfigurationException
+     * @throws org.xml.sax.SAXException
+     * @throws java.io.IOException
      */
     public void validate() throws ParserConfigurationException, SAXException, IOException {
 
@@ -69,7 +82,9 @@ public class XMLToProperties {
     }
 
     /**
+     * 
      * @param inputFile Log4J XML input file
+     * 
      * @throws java.io.IOException
      */
     public XMLToProperties(String inputFile) throws IOException {
@@ -100,7 +115,10 @@ public class XMLToProperties {
     }
 
     /**
-     * @param outputFile output file with Log4J properties
+     * Prints to file
+     * 
+     * @param outputFile output file
+     * 
      * @throws javax.xml.transform.TransformerConfigurationException
      * @throws javax.xml.transform.TransformerException
      */
