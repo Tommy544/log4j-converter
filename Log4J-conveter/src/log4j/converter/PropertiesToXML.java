@@ -393,7 +393,7 @@ public class PropertiesToXML {
      * @return true if value is equal to one of supported values, otherwise false
      */
     private boolean isStandartLevelValue(String levelValue){
-        return levelValue.matches("all|trace|debug|info|warn|error|fatal|off|null");
+        return levelValue.matches("all|inherit|trace|debug|info|warn|error|fatal|off|null");
     }
     //<editor-fold defaultstate="collapsed" desc="Processing errorHandlers">
     

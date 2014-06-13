@@ -254,14 +254,14 @@ public class PropertiesToXMLTest {
             assertEquals("DateFormat", (String) expression.evaluate(doc, XPathConstants.STRING));
             expression = xPath.compile("/configuration/logger[@name='class.of.the.day']/@name");
             assertEquals("class.of.the.day", (String) expression.evaluate(doc, XPathConstants.STRING));
-//            expression = xPath.compile("/configuration/logger[@name='class.of.the.day']/level[@value='inherit']/@value");
-//            assertEquals("inherit", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/logger[@name='class.of.the.day']/level[@value='inherit']/@value");
+            assertEquals("inherit", (String) expression.evaluate(doc, XPathConstants.STRING));
             expression = xPath.compile("/configuration/logger[@name='SECURITY']/@name");
             assertEquals("SECURITY", (String) expression.evaluate(doc, XPathConstants.STRING));
             expression = xPath.compile("/configuration/logger[@additivity='false']/@additivity");
             assertEquals("false", (String) expression.evaluate(doc, XPathConstants.STRING));
-//            expression = xPath.compile("/configuration/logger[@additivity='false']/level[@value='inherit']/@value");
-//            assertEquals("inherit", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/logger[@additivity='false']/level[@value='inherit']/@value");
+            assertEquals("inherit", (String) expression.evaluate(doc, XPathConstants.STRING));
             expression = xPath.compile("/configuration/logger/appender-ref[@ref='A1']/@ref");
             assertEquals("A1", (String) expression.evaluate(doc, XPathConstants.STRING));
             expression = xPath.compile("/configuration/logger[@name='SECURITY.access']/@name");
