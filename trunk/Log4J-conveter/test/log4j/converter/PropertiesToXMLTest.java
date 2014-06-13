@@ -137,7 +137,7 @@ public class PropertiesToXMLTest {
         }
     }
     
-    //@Test
+    @Test
     public void doConversionWrongInput() {
         try {
             propertiesToXML = new PropertiesToXML("test/log4j/converter/resources/nonExistant.properties");
@@ -277,6 +277,150 @@ public class PropertiesToXMLTest {
             fail("Encountered XPathExpressionException");
         }
     }
+    
+    @Test
+    public void convertTestPlugin() {
+        
+        Document doc = null;
+        
+        doConversion("test/log4j/converter/resources/plugin.properties", "test/log4j/converter/resources/outputXML.xml");
+        
+        try {
+            doc = getDocument("test/log4j/converter/resources/outputXML.xml"); // also checks validity
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            logger.log(Level.SEVERE, "Exception while getting Document", ex);
+            fail("Exception while getting Document: " + ex);
+        }
+        
+        XPath xPath = getXPath();
+        XPathExpression expression;
+        
+        try {
+            expression = xPath.compile("/configuration/plugin/@name");
+            assertEquals("pluginname", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/plugin/@class");
+            assertEquals("pluginclass", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/plugin/connectionSource/@class");
+            assertEquals("cs", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/plugin/connectionSource/dataSource/@class");
+            assertEquals("ds", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/plugin/connectionSource/dataSource/param/@name");
+            assertEquals("dsparam", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/plugin/connectionSource/dataSource/param/@value");
+            assertEquals("dsvalue", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/plugin/connectionSource/param/@name");
+            assertEquals("csparam", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/plugin/connectionSource/param/@value");
+            assertEquals("csvalue", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/root/level/@value");
+            assertEquals("info", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/root/appender-ref[@ref='file']/@ref");
+            assertEquals("file", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/root/appender-ref[@ref='stdout']/@ref");
+            assertEquals("stdout", (String) expression.evaluate(doc, XPathConstants.STRING));
+        } catch (XPathExpressionException ex) {
+            logger.log(Level.SEVERE, "XPathExpressionException", ex);
+            fail("Encountered XPathExpressionException");
+        }
+    }
+    
+    @Test
+    public void convertTestLoggers() {
+        
+        Document doc = null;
+        
+        doConversion("test/log4j/converter/resources/loggers.properties", "test/log4j/converter/resources/outputXML.xml");
+        
+        try {
+            doc = getDocument("test/log4j/converter/resources/outputXML.xml"); // also checks validity
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            logger.log(Level.SEVERE, "Exception while getting Document", ex);
+            fail("Exception while getting Document: " + ex);
+        }
+        
+        XPath xPath = getXPath();
+        XPathExpression expression;
+        
+        try {
+            expression = xPath.compile("/configuration/logger[@name='loggername']/@name");
+            assertEquals("loggername", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/logger/appender-ref[@ref='LEVELVALUE']/@ref");
+            assertEquals("LEVELVALUE", (String) expression.evaluate(doc, XPathConstants.STRING));
+            
+            expression = xPath.compile("/configuration/logger[@name='loggername2']/@name");
+            assertEquals("loggername2", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/logger/appender-ref[@ref='LEVELVALUE2']/@ref");
+            assertEquals("LEVELVALUE2", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/logger[@name='loggername2']/appender-ref[@ref='ar']/@ref");
+            assertEquals("ar", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/logger[@name='loggername2']/appender-ref[@ref='ar2']/@ref");
+            assertEquals("ar2", (String) expression.evaluate(doc, XPathConstants.STRING));
+            
+            expression = xPath.compile("/configuration/logger[@name='loggername2']/@name");
+            assertEquals("loggername2", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/logger[@name='loggername3']/appender-ref[@ref='ar']/@ref");
+            assertEquals("ar", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/logger[@name='loggername3']/appender-ref[@ref='ar2']/@ref");
+            assertEquals("ar2", (String) expression.evaluate(doc, XPathConstants.STRING));
+            
+            expression = xPath.compile("/configuration/root/level/@value");
+            assertEquals("info", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/root/appender-ref[@ref='file']/@ref");
+            assertEquals("file", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/root/appender-ref[@ref='stdout']/@ref");
+            assertEquals("stdout", (String) expression.evaluate(doc, XPathConstants.STRING));
+            
+            expression = xPath.compile("/configuration/loggerFactory/@class");
+            assertEquals("log4j.loggerFactory", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/loggerFactory/param/@name");
+            assertEquals("lfparam", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/loggerFactory/param/@value");
+            assertEquals("lfvalue", (String) expression.evaluate(doc, XPathConstants.STRING));
+        } catch (XPathExpressionException ex) {
+            logger.log(Level.SEVERE, "XPathExpressionException", ex);
+            fail("Encountered XPathExpressionException");
+        }
+    }
+    
+    @Test
+    public void convertTestRenderers() {
+        
+        Document doc = null;
+        
+        doConversion("test/log4j/converter/resources/renderers.properties", "test/log4j/converter/resources/outputXML.xml");
+        
+        try {
+            doc = getDocument("test/log4j/converter/resources/outputXML.xml"); // also checks validity
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            logger.log(Level.SEVERE, "Exception while getting Document", ex);
+            fail("Exception while getting Document: " + ex);
+        }
+        
+        XPath xPath = getXPath();
+        XPathExpression expression;
+        
+        try {
+            expression = xPath.compile("/configuration/renderer[@renderedClass='com.acando.norolnes.MyClass']/@renderedClass");
+            assertEquals("com.acando.norolnes.MyClass", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/renderer[@renderingClass='com.acando.norolnes.MyClassRenderer']/@renderingClass");
+            assertEquals("com.acando.norolnes.MyClassRenderer", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/renderer[@renderedClass='rendered']/@renderedClass");
+            assertEquals("rendered", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/renderer[@renderingClass='rendering']/@renderingClass");
+            assertEquals("rendering", (String) expression.evaluate(doc, XPathConstants.STRING));
+            
+            expression = xPath.compile("/configuration/root/level/@value");
+            assertEquals("info", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/root/appender-ref[@ref='file']/@ref");
+            assertEquals("file", (String) expression.evaluate(doc, XPathConstants.STRING));
+            expression = xPath.compile("/configuration/root/appender-ref[@ref='stdout']/@ref");
+            assertEquals("stdout", (String) expression.evaluate(doc, XPathConstants.STRING));
+        } catch (XPathExpressionException ex) {
+            logger.log(Level.SEVERE, "XPathExpressionException", ex);
+            fail("Encountered XPathExpressionException");
+        }
+    }
+    
 
 //    @Rule 
 //    public final ExpectedSystemExit exit = ExpectedSystemExit.none();
