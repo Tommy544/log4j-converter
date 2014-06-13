@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <category class="categoryclass" name="category" additivity="true">
+        <param name="categoryparam" value="categoryvalue"/>
+        <level class="levelclass" value="levelvalue">
+            <param name="levelparam" value="levelparamvalue"/>
+        </level>
+        <appender-ref ref="ar"/>
+    </category>
+    <category class="categoryclass2" name="category2" additivity="true">
+        <param name="categoryparam2" value="categoryvalue2"/>
+        <appender-ref ref="ar"/>
+    </category>
+    <category class="categoryclass3" name="category3" additivity="true">
+        <param name="categoryparam3" value="categoryvalue3"/>
+        <appender-ref ref="ar"/>
+        <appender-ref ref="ar2"/>
+    </category>
+    <category class="categoryclass4" name="category4" additivity="true">
+        <param name="categoryparam4" value="categoryvalue4"/>
+        <priority class="priorityclass" value="priorityvalue">
+            <param name="priorityparam" value="priorityparamvalue"/>
+        </priority>
+        <appender-ref ref="ar"/>
+        <appender-ref ref="ar2"/>
+    </category>
+    <root>
+        <level value="info"/>
+        <appender-ref ref="file"/>
+        <appender-ref ref="stdout"/>
+    </root>
+    <categoryFactory class="categoryfactory">
+        <param name="cfparam" value="cfvalue"/>
+    </categoryFactory>
+</log4j:configuration>
