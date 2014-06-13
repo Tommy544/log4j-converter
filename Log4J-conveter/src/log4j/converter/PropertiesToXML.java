@@ -165,6 +165,27 @@ public class PropertiesToXML {
             configurationElemnt.appendChild(renderer);
         }
     }
+    /**
+    * Processes Renderer classes and appends them to root tag
+    * 
+    * @param properties input properties
+    * @param keys   sorted properties keys
+    * @param configurationElemnt    root tag of document
+    */
+    private void convertPlugins(Properties properties, SortedSet<String> keys, Element configurationElemnt){
+        final String prefix = "log4j.plugin.";
+        SortedSet<String> logerKeys=keys.tailSet(prefix);
+        for(String key : logerKeys){
+            if(!key.startsWith(prefix)) break;
+            Element renderer = doc.createElement("plugin");
+            String pluginName=key.substring(prefix.length());
+            renderer.setAttribute("name", pluginName);
+            renderer.setAttribute("class", properties.getProperty(key));
+            processParams(properties, keys, key, renderer, -1, new String[]{"connectionSource","ConnectionSource"});
+            processConnectionSource(properties, keys, key, renderer);
+            configurationElemnt.appendChild(renderer);
+        }
+    }
     
     /**
     * Processes Appender classes and appends them to root tag
@@ -313,6 +334,8 @@ public class PropertiesToXML {
         convertRenderes(properties,keys,configurationElement);
         
         convertAppenders(properties, keys, configurationElement);
+        
+        convertPlugins(properties, keys, configurationElement);
         
         //zkonvertuju loggery
         convertLoggers(properties,keys,configurationElement);
@@ -516,15 +539,20 @@ public class PropertiesToXML {
                return null; 
             }else{
                 String key=myKeys.first();
+                String name=null;
+                Element rollingPolicy= doc.createElement("rollingPolicy");
                 if(key.equals(prefix)){
-                    Element rollingPolicy= doc.createElement("rollingPolicy");
-                    rollingPolicy.setAttribute("class", properties.getProperty(key));
-                    appender.appendChild(rollingPolicy);
-                    return processParams(properties, keys, prefix, rollingPolicy, -1, new String[]{});
                 }else{
-                    //nemam jak rozlišit jmeno od parametru =>
-                    return null;
+                    if(key.startsWith(prefix+".")){
+                        name=key.substring(prefix.length()+1);
+                        rollingPolicy.setAttribute("name", name);
+                    }else{
+                        return null;
+                    }
                 }
+                rollingPolicy.setAttribute("class", properties.getProperty(key));
+                appender.appendChild(rollingPolicy);
+                return processParams(properties, keys, key, rollingPolicy, -1, new String[]{});
             }
         } 
         return null;
@@ -547,18 +575,23 @@ public class PropertiesToXML {
                return null; 
             }else{
                 String key=myKeys.first();
+                String name=null;
+                Element triggeringPolicy = doc.createElement("triggeringPolicy");
                 if(key.equals(prefix)){
-                    Element triggeringPolicy = doc.createElement("triggeringPolicy");
-                    triggeringPolicy.setAttribute("class", properties.getProperty(key));
-                    String lastKey = key;
-                    lastKey = mantainLastKey(processFilters(properties, myKeys, prefix, triggeringPolicy), lastKey);
-                    lastKey = mantainLastKey(processParams(properties, keys, prefix, triggeringPolicy, -1, new String[]{"filter"}), lastKey);
-                    appender.appendChild(triggeringPolicy);
-                    return lastKey;
                 }else{
-                    //nemam jak jednoduše rozlišit jmeno od parametru => pojmenovane ignoruju
-                    return null;
+                    if(key.startsWith(prefix+".")){
+                        name=key.substring(prefix.length()+1);
+                        triggeringPolicy.setAttribute("name", name);
+                    }else{
+                        return null;
+                    }
                 }
+                triggeringPolicy.setAttribute("class", properties.getProperty(key));
+                String lastKey = key;
+                lastKey = mantainLastKey(processFilters(properties, myKeys, key, triggeringPolicy), lastKey);
+                lastKey = mantainLastKey(processParams(properties, keys, key, triggeringPolicy, -1, new String[]{"filter"}), lastKey);
+                appender.appendChild(triggeringPolicy);
+                return lastKey;
             }
         }
         return null;
