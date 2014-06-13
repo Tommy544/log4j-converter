@@ -314,11 +314,11 @@ public class XMLToPropertiesTest {
             expectedProperties.add("log4j.reset=false");
             expectedProperties.add("log4j.rootLogger=INFO, file, stdout");
             expectedProperties.add("log4j.appender.file=org.apache.log4j.RollingFileAppender");
-            expectedProperties.add("log4j.appender.file.errorHandler=org.jboss.logging.util.OnlyOnceErrorHandler");
-            expectedProperties.add("log4j.appender.file.errorHandler.root-ref=true");
-            expectedProperties.add("log4j.appender.file.errorHandler.logger-ref=lr");
-            expectedProperties.add("log4j.appender.file.errorHandler.appender-ref=ar");
-            expectedProperties.add("log4j.appender.file.errorHandler.ehparam=ehvalue");
+            expectedProperties.add("log4j.appender.file.errorhandler=org.jboss.logging.util.OnlyOnceErrorHandler");
+            expectedProperties.add("log4j.appender.file.errorhandler.root-ref=true");
+            expectedProperties.add("log4j.appender.file.errorhandler.logger-ref=lr");
+            expectedProperties.add("log4j.appender.file.errorhandler.appender-ref=ar");
+            expectedProperties.add("log4j.appender.file.errorhandler.ehparam=ehvalue");
             expectedProperties.add("log4j.appender.file.File=C:\\loging.log");
             expectedProperties.add("log4j.appender.file.MaxBackupIndex=1");
             expectedProperties.add("log4j.appender.file.MaxFileSize=1MB");

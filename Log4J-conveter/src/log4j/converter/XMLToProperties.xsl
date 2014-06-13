@@ -82,7 +82,7 @@
     
     <!--appender/errorHandler-->
     <xsl:template match="//appender/errorHandler">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../@name"/>.errorHandler=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>      
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../@name"/>.errorhandler=<xsl:value-of select="@class"/><xsl:text>&#10;</xsl:text>      
         <xsl:apply-templates select="root-ref"/>
         <xsl:apply-templates select="logger-ref"/>
         <xsl:apply-templates select="appender-ref"/>   
@@ -91,22 +91,22 @@
     
     <!--appender/errorhandler/param-->
     <xsl:template match="//appender/errorHandler/param">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.errorHandler.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>       
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.errorhandler.<xsl:value-of select="@name"/>=<xsl:value-of select="@value"/><xsl:text>&#10;</xsl:text>       
     </xsl:template>
     
     <!--appender/errorhandler/root-ref-->
     <xsl:template match="//appender/errorHandler/root-ref">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/><xsl:text>.errorHandler.root-ref=true</xsl:text><xsl:text>&#10;</xsl:text>        
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/><xsl:text>.errorhandler.root-ref=true</xsl:text><xsl:text>&#10;</xsl:text>        
     </xsl:template>
     
     <!--appender/errorhandler/logger-ref-->
     <xsl:template match="//appender/errorHandler/logger-ref">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.errorHandler.logger-ref=<xsl:value-of select="@ref"/><xsl:text>&#10;</xsl:text>       
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.errorhandler.logger-ref=<xsl:value-of select="@ref"/><xsl:text>&#10;</xsl:text>       
     </xsl:template>
     
     <!--appender/errorhandler/appender-ref-->
     <xsl:template match="//appender/errorHandler/appender-ref">
-        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.errorHandler.appender-ref=<xsl:value-of select="@ref"/><xsl:text>&#10;</xsl:text>        
+        <xsl:text>log4j.appender.</xsl:text><xsl:value-of select="../../@name"/>.errorhandler.appender-ref=<xsl:value-of select="@ref"/><xsl:text>&#10;</xsl:text>        
     </xsl:template>
     
     <!--appender/param-->
