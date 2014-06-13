@@ -201,13 +201,11 @@ public class PropertiesToXML {
                 String lastKey=key;
                 lastKey = mantainLastKey(processErrorHandler(properties,keys,currentAppenderPrefix,appender),lastKey);
                 lastKey = mantainLastKey(processParams(properties,keys,currentAppenderPrefix,appender,1,new String[]{"",
-                "errorhandler", "rollingPolicy", "triggeringPolicy", "connectionSource",
+                "errorhandler", "rollingPolicy", "triggeringPolicy", "connectionSource", "RollingPolicy", "TriggeringPolicy", "ConnectionSource",
                 "layout", "filter", "appender-ref"}), lastKey);
-                //TODO otestovat tyhle tři
                 lastKey = mantainLastKey(processRollingPolicy(properties,keys,currentAppenderPrefix,appender), lastKey);
                 lastKey = mantainLastKey(processTriggeringPolicy(properties,keys,currentAppenderPrefix,appender), lastKey);
                 lastKey = mantainLastKey(processConnectionSource(properties,keys,currentAppenderPrefix,appender), lastKey);
-                //
                 lastKey = mantainLastKey(processLayout(properties,keys,currentAppenderPrefix,appender), lastKey);
                 lastKey = mantainLastKey(processAppenderRefs(properties,keys,currentAppenderPrefix,appender), lastKey);
                 lastKey = mantainLastKey(processFilters(properties,keys,currentAppenderPrefix,appender), lastKey);
@@ -256,7 +254,6 @@ public class PropertiesToXML {
         for(String key :keys.tailSet(rootPrefix)){
             if(!key.startsWith(rootPrefix)) break;
             if(null != root){
-                //TODO vyhodit vyjimku
                 break;
             }
             root = doc.createElement("root");
@@ -313,7 +310,6 @@ public class PropertiesToXML {
         Element configurationElement = convertConfig(properties, keys);
         doc.appendChild(configurationElement);
         
-        //TODO otestovat renderery
         convertRenderes(properties,keys,configurationElement);
         
         convertAppenders(properties, keys, configurationElement);
@@ -513,22 +509,25 @@ public class PropertiesToXML {
      * @return ?
      */
     private String processRollingPolicy(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
-        final String prefix=currentAppenderPrefix+".rollingPolicy";
-        SortedSet<String> myKeys=keys.tailSet(prefix);
-        if(myKeys.isEmpty()){
-           return null; 
-        }else{
-            String key=myKeys.first();
-            if(key.equals(prefix)){
-                Element rollingPolicy= doc.createElement("rollingPolicy");
-                rollingPolicy.setAttribute("class", properties.getProperty(key));
-                appender.appendChild(rollingPolicy);
-                return processParams(properties, keys, prefix, rollingPolicy, -1, new String[]{});
+        final String[] prefixes=new String[]{currentAppenderPrefix+".rollingPolicy",currentAppenderPrefix+".RollingPolicy"};
+        for(String prefix : prefixes){
+            SortedSet<String> myKeys=keys.tailSet(prefix);
+            if(myKeys.isEmpty()){
+               return null; 
             }else{
-                //nemam jak rozlišit jmeno od parametru =>
-                return null;
+                String key=myKeys.first();
+                if(key.equals(prefix)){
+                    Element rollingPolicy= doc.createElement("rollingPolicy");
+                    rollingPolicy.setAttribute("class", properties.getProperty(key));
+                    appender.appendChild(rollingPolicy);
+                    return processParams(properties, keys, prefix, rollingPolicy, -1, new String[]{});
+                }else{
+                    //nemam jak rozlišit jmeno od parametru =>
+                    return null;
+                }
             }
-        }
+        } 
+        return null;
     }
 
     /**
@@ -541,25 +540,28 @@ public class PropertiesToXML {
      * @return ?
      */
     private String processTriggeringPolicy(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
-        final String prefix=currentAppenderPrefix+".triggeringPolicy";
-        SortedSet<String> myKeys=keys.tailSet(prefix);
-        if(myKeys.isEmpty()){
-           return null; 
-        }else{
-            String key=myKeys.first();
-            if(key.equals(prefix)){
-                Element triggeringPolicy = doc.createElement("triggeringPolicy");
-                triggeringPolicy.setAttribute("class", properties.getProperty(key));
-                String lastKey = key;
-                lastKey = mantainLastKey(processFilters(properties, myKeys, prefix, triggeringPolicy), lastKey);
-                lastKey = mantainLastKey(processParams(properties, keys, prefix, triggeringPolicy, -1, new String[]{"filter"}), lastKey);
-                appender.appendChild(triggeringPolicy);
-                return lastKey;
+        final String[] prefixes=new String[]{currentAppenderPrefix+".triggeringPolicy",currentAppenderPrefix+".TriggeringPolicy"};
+        for(String prefix : prefixes){
+            SortedSet<String> myKeys=keys.tailSet(prefix);
+            if(myKeys.isEmpty()){
+               return null; 
             }else{
-                //nemam jak jednoduše rozlišit jmeno od parametru => pojmenovane ignoruju
-                return null;
+                String key=myKeys.first();
+                if(key.equals(prefix)){
+                    Element triggeringPolicy = doc.createElement("triggeringPolicy");
+                    triggeringPolicy.setAttribute("class", properties.getProperty(key));
+                    String lastKey = key;
+                    lastKey = mantainLastKey(processFilters(properties, myKeys, prefix, triggeringPolicy), lastKey);
+                    lastKey = mantainLastKey(processParams(properties, keys, prefix, triggeringPolicy, -1, new String[]{"filter"}), lastKey);
+                    appender.appendChild(triggeringPolicy);
+                    return lastKey;
+                }else{
+                    //nemam jak jednoduše rozlišit jmeno od parametru => pojmenovane ignoruju
+                    return null;
+                }
             }
         }
+        return null;
     }
 
     /**
@@ -572,24 +574,27 @@ public class PropertiesToXML {
      * @return ?
      */
     private String processConnectionSource(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
-        final String prefix=currentAppenderPrefix+".connectionSource";
-        SortedSet<String> myKeys=keys.tailSet(prefix);
-        if(myKeys.isEmpty()){
-           return null; 
-        }else{
-            String key=myKeys.first();
-            if(key.equals(prefix)){
-                Element connectionSource = doc.createElement("connectionSource");
-                connectionSource.setAttribute("class", properties.getProperty(key));
-                String lastKey = key;
-                lastKey = mantainLastKey(processDataSource(properties, myKeys, prefix, connectionSource), lastKey);
-                lastKey = mantainLastKey(processParams(properties, keys, prefix, connectionSource, -1, new String[]{"filter"}), lastKey);
-                appender.appendChild(connectionSource);
-                return lastKey;
+        final String[] prefixes=new String[]{currentAppenderPrefix+".connectionSource",currentAppenderPrefix+".ConnectionSource"};
+        for(String prefix : prefixes){
+            SortedSet<String> myKeys=keys.tailSet(prefix);
+            if(myKeys.isEmpty()){
+               return null; 
             }else{
-                return key;
+                String key=myKeys.first();
+                if(key.equals(prefix)){
+                    Element connectionSource = doc.createElement("connectionSource");
+                    connectionSource.setAttribute("class", properties.getProperty(key));
+                    String lastKey = key;
+                    lastKey = mantainLastKey(processDataSource(properties, myKeys, prefix, connectionSource), lastKey);
+                    lastKey = mantainLastKey(processParams(properties, keys, prefix, connectionSource, -1, new String[]{"filter"}), lastKey);
+                    appender.appendChild(connectionSource);
+                    return lastKey;
+                }else{
+                    return key;
+                }
             }
         }
+        return null;
     }
 
     /**
@@ -684,7 +689,7 @@ public class PropertiesToXML {
                     layout.setAttribute("class", properties.getProperty(key));
                     appender.appendChild(layout);
                 }else{
-                    //TODO nějakou vyjimku
+                    continue;//přeskočim
                 }
             }else{
                 processParam(properties, key, prefix+".", layout);
