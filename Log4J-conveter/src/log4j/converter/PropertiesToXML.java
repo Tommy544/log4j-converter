@@ -353,11 +353,13 @@ public class PropertiesToXML {
                 level.setAttribute("class", customLevel[1]);
                 level.setAttribute("value", customLevel[0]);
             }else{
-                //TODO asi nějakou vyjímku
+                level=null;
             }
         }
-        logger.appendChild(level);
-        for(int i=1; i<values.length; i++){
+        if(null!=level){
+            logger.appendChild(level);
+        }
+        for(int i= (null!=level) ? 1 : 0; i<values.length; i++){
             Element appenderRef = doc.createElement("appender-ref");
             appenderRef.setAttribute("ref", values[i].trim());
             logger.appendChild(appenderRef);
