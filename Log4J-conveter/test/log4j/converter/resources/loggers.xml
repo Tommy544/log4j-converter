@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <logger name="loggername" additivity="true">
+        <level class="levelclass" value="levelvalue">
+            <param name="levelparam" value="levelparamvalue"/>
+        </level>
+        <appender-ref ref="ar"/>
+    </logger>
+    <logger name="loggername2" additivity="false">
+        <level class="levelclass2" value="levelvalue2">
+            <param name="levelparam" value="levelparamvalue"/>
+        </level>
+        <appender-ref ref="ar"/>
+        <appender-ref ref="ar2"/>
+    </logger>
+    <logger name="loggername3" additivity="false">
+        <appender-ref ref="ar"/>
+        <appender-ref ref="ar2"/>
+    </logger>
+    <root>
+        <level value="info"/>
+        <appender-ref ref="file"/>
+        <appender-ref ref="stdout"/>
+    </root>
+    <loggerFactory class="loggerfactory">
+        <param name="lfparam" value="lfvalue"/>
+    </loggerFactory>
+</log4j:configuration>

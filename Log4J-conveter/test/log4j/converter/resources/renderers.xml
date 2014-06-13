@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <renderer renderedClass="com.acando.norolnes.MyClass"
+              renderingClass="com.acando.norolnes.MyClassRenderer"/>
+    <renderer renderedClass="rendered"
+              renderingClass="rendering"/>
+    <root>
+        <level value="info"/>
+        <appender-ref ref="file"/>
+        <appender-ref ref="stdout"/>
+    </root>
+</log4j:configuration>

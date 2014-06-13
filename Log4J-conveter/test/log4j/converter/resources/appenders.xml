@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+    <appender class="org.apache.log4j.RollingFileAppender" name="file">
+        <errorHandler class="org.jboss.logging.util.OnlyOnceErrorHandler">
+            <param name="ehparam" value="ehvalue"/>
+            <root-ref/>
+            <logger-ref ref="lr"/>
+            <appender-ref ref="ar"/>
+        </errorHandler>            
+        <param value="C:\loging.log" name="File"/>
+        <param value="1" name="MaxBackupIndex"/>
+        <param value="1MB" name="MaxFileSize"/>
+        <rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+            <param name="FileNamePattern" value="/applogs/myportal/portal.%d.log.gz" />
+        </rollingPolicy>
+        <triggeringPolicy class="tp">
+            <param name="tpparam" value="tpvalue" />
+        </triggeringPolicy>   
+        <connectionSource class="cs">
+            <dataSource class="ds">
+                <param name="dsparam" value="dsvalue"/>
+            </dataSource>
+            <param name="csparam" value="csvalue"/>
+        </connectionSource>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %m%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+    <appender class="org.apache.log4j.ConsoleAppender" name="stdout"/>
+    <root>
+        <level value="info"/>
+        <appender-ref ref="file"/>
+        <appender-ref ref="stdout"/>
+    </root>
+</log4j:configuration>
+
