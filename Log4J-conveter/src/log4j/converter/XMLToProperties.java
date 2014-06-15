@@ -38,6 +38,9 @@ public class XMLToProperties {
      */
     private final String xslFile = "src/log4j/converter/XMLToProperties.xsl";
     
+    /**
+     * Whether error was found
+     */
     private boolean foundError = false;
 
     /**
@@ -63,6 +66,7 @@ public class XMLToProperties {
 
             @Override
             public void error(SAXParseException exception) throws SAXException {
+                foundError = true;
                 System.err.println("Error while validating input XML file:\nError: "
                         + exception.getMessage());
                 throw new SAXParseException("error", null, exception);
@@ -70,6 +74,7 @@ public class XMLToProperties {
 
             @Override
             public void fatalError(SAXParseException exception) throws SAXException {
+                foundError = true;
                 System.err.println("Fatal Error while validating input XML file:\nFatal Error: "
                         + exception.getMessage());
                 throw new SAXParseException("fatal error", null, exception);
@@ -104,6 +109,11 @@ public class XMLToProperties {
     public void Convert() throws TransformerConfigurationException, TransformerException {
         TransformerFactory tf = TransformerFactory.newInstance();
 
+        if (foundError)
+        {
+            System.err.println("Warning: XML file validation has found errors.");
+        }
+        
         System.out.println(tf.getClass());
 
         Transformer xsltProc = tf.newTransformer(
@@ -126,6 +136,11 @@ public class XMLToProperties {
 
         TransformerFactory tf = TransformerFactory.newInstance();
 
+        if (foundError)
+        {
+            System.err.println("Warning: XML file validation has found errors.");
+        }
+        
         Transformer xsltProc = tf.newTransformer(
                 new StreamSource(new File(xslFile)));
 
