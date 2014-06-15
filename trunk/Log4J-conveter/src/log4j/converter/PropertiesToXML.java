@@ -33,7 +33,10 @@ import org.w3c.dom.NodeList;
  * Converts Log4J properties to XML
  */
 public class PropertiesToXML {
-    String inputFile;
+    /**
+     * Input properties file
+     */
+    protected String inputFile;
     
     /**
      * Document containing curent results
@@ -237,6 +240,7 @@ public class PropertiesToXML {
     }
     
     /**
+     * Processes Logger classes and appends them to root tag
      * 
      * @param properties    input properties
      * @param keys  sorted properties keys
@@ -261,6 +265,7 @@ public class PropertiesToXML {
     }
     
     /**
+     * Processes root logger  and appends it to root tag
      * 
      * @param properties    input properties
      * @param keys  sorted properties keys
@@ -313,6 +318,7 @@ public class PropertiesToXML {
     }
     
     /**
+     * Fill the XML result with the configuration converted from input file. 
      * 
      * @param result    StreamResult, which XML is filled to
      * 
@@ -352,6 +358,8 @@ public class PropertiesToXML {
     }
 
     /**
+     * Splits the string form property, put the values into proper elements
+     * and append them to the Loger
      * 
      * @param logerValue    properties raw value
      * @param logger    Logger element
@@ -387,6 +395,7 @@ public class PropertiesToXML {
     }
     
     /**
+     * Check if the passed levelValue is custom or standart value.
      * 
      * @param levelValue level value
      * 
@@ -402,9 +411,10 @@ public class PropertiesToXML {
      * 
      * @param properties log4j properties
      * @param keys   sorted properties keys
-     * @param configurationElemnt    root tag of document
+     * @param currentAppenderPrefix   key name appender prefix
+     * @param configurationElemnt    element to append the ErrorHandler
      * 
-     * @return 
+     * @return bigest key reached or null if no key was proccesed.
      */
     private String processErrorHandler(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
         final String prefix=currentAppenderPrefix+".errorhandler";
@@ -418,21 +428,22 @@ public class PropertiesToXML {
         }else{
             return keys.first();
         }
-            processRootRef(properties, myKeys, prefix, hander);
-            processLoggerRefs(properties, myKeys, prefix, hander);
-            processAppenderRefs(properties, myKeys, prefix, hander);
-            processParams(properties, myKeys, prefix, hander, 0, new String[]{"","root-ref","logger-ref","appender-ref"});
+        processRootRef(properties, myKeys, prefix, hander);
+        processLoggerRefs(properties, myKeys, prefix, hander);
+        processAppenderRefs(properties, myKeys, prefix, hander);
+        processParams(properties, myKeys, prefix, hander, 0, new String[]{"","root-ref","logger-ref","appender-ref"});
         return null;
     }
     
     /**
+     * Process Root reference
      * 
      * @param properties log4j properties
      * @param keys   sorted properties keys
-     * @param handlerPrefix
-     * @param configurationElemnt    root tag of document
+     * @param handlerPrefix key name prefix
+     * @param configurationElemnt    element to append the root ref
      * 
-     * @return 
+     * @return bigest key reached or null if no key was proccesed.
      */
     private String processRootRef(Properties properties, SortedSet<String> keys, String handlerPrefix, Element element){
         String prefix=handlerPrefix+".root-ref";
@@ -448,13 +459,14 @@ public class PropertiesToXML {
     }
     
     /**
+     * Process Logger references
      * 
      * @param properties log4j properties
      * @param keys   sorted properties keys
-     * @param handlerPrefix
-     * @param configurationElemnt    root tag of document
+     * @param handlerPrefix key name prefix
+     * @param configurationElemnt    element to append the Loger ref
      * 
-     * @return 
+     * @return bigest key reached or null if no key was proccesed.
      */
     private String processLoggerRefs(Properties properties, SortedSet<String> keys, String handlerPrefix, Element element){
         String prefix=handlerPrefix+".logger-ref";
@@ -472,15 +484,16 @@ public class PropertiesToXML {
     //</editor-fold>
     
     /**
+     * Process parameters and add them to the element at the specified position.
      * 
      * @param properties log4j properties
      * @param keys   sorted properties keys
-     * @param basePrefix ?
-     * @param element ?
-     * @param position ?
-     * @param ignored ?
+     * @param basePrefix  key name prefix
+     * @param element   element to append the parameter
+     * @param position  param element position in element's DTD definition, less than zero to append to append
+     * @param ignored array of ignored keywords
      * 
-     * @return ?
+     * @return bigest key reached or null if no key was proccesed.
      */
     private String processParams(Properties properties, SortedSet<String> keys, String basePrefix, Element element, int position, String[] ignored) {
         String prefix=basePrefix+".";
@@ -509,6 +522,7 @@ public class PropertiesToXML {
     }
     
      /**
+     * Create a param element form key and append it to the element
      * 
      * @param properties log4j properties
      * @param key   properties key
@@ -523,13 +537,13 @@ public class PropertiesToXML {
     }
 
     /**
-     * 
+     * Process RollingPolicy
      * @param properties log4j properties
      * @param keys   sorted properties keys
      * @param currentAppenderPrefix    key name appender prefix
      * @param appender  appender tag to append new rollingPolicy tags
      * 
-     * @return ?
+     * @return bigest key reached or null if no key was proccesed.
      */
     private String processRollingPolicy(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
         final String[] prefixes=new String[]{currentAppenderPrefix+".rollingPolicy",currentAppenderPrefix+".RollingPolicy"};
@@ -559,13 +573,14 @@ public class PropertiesToXML {
     }
 
     /**
+     * Process TriggeringPolicy
      * 
      * @param properties log4j properties
      * @param keys   sorted properties keys
      * @param currentAppenderPrefix    key name appender prefix
      * @param appender  appender tag to append new triggeringPolicy tags
      * 
-     * @return ?
+     * @return bigest key reached or null if no key was proccesed.
      */
     private String processTriggeringPolicy(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
         final String[] prefixes=new String[]{currentAppenderPrefix+".triggeringPolicy",currentAppenderPrefix+".TriggeringPolicy"};
@@ -598,16 +613,17 @@ public class PropertiesToXML {
     }
 
     /**
+     * Process ConnectionSource
      * 
      * @param properties log4j properties
      * @param keys   sorted properties keys
-     * @param currentAppenderPrefix    key name appender prefix
+     * @param currentAppenderPrefix    key name prefix
      * @param appender  appender tag to append new connectionSource tags
      * 
-     * @return ?
+     * @return bigest key reached or null if no key was proccesed.
      */
-    private String processConnectionSource(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
-        final String[] prefixes=new String[]{currentAppenderPrefix+".connectionSource",currentAppenderPrefix+".ConnectionSource"};
+    private String processConnectionSource(Properties properties, SortedSet<String> keys, String currentPrefix, Element appender) {
+        final String[] prefixes=new String[]{currentPrefix+".connectionSource",currentPrefix+".ConnectionSource"};
         for(String prefix : prefixes){
             SortedSet<String> myKeys=keys.tailSet(prefix);
             if(myKeys.isEmpty()){
@@ -631,16 +647,17 @@ public class PropertiesToXML {
     }
 
     /**
+     * Process DataSource
      * 
      * @param properties log4j properties
      * @param keys   sorted properties keys
-     * @param currentAppenderPrefix    key name appender prefix
+     * @param currentAppenderPrefix    key name ConnectionSource prefix
      * @param appender  appender tag to append new dataSource tags
      * 
-     * @return ?
+     * @return bigest key reached or null if no key was proccesed.
      */
-    private String processDataSource(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
-        final String prefix=currentAppenderPrefix+".dataSource";
+    private String processDataSource(Properties properties, SortedSet<String> keys, String connectionSourcePrefix, Element appender) {
+        final String prefix=connectionSourcePrefix+".dataSource";
         SortedSet<String> myKeys=keys.tailSet(prefix);
         if(myKeys.isEmpty()){
            return null; 
@@ -660,13 +677,14 @@ public class PropertiesToXML {
     }
 
     /**
+     * Process Filters
      * 
      * @param properties log4j properties
      * @param keys   sorted properties keys
      * @param currentAppenderPrefix    key name appender prefix
      * @param appender  appender tag to append new filter tags
      * 
-     * @return ?
+     * @return bigest key reached or null if no key was proccesed.
      */
     private String processFilters(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
         final String prefix=currentAppenderPrefix+".filter";
@@ -700,13 +718,14 @@ public class PropertiesToXML {
     }
     
     /**
+     * Process Layout
      * 
      * @param properties log4j properties
      * @param keys   sorted properties keys
      * @param currentAppenderPrefix    key name appender prefix
      * @param appender  appender tag to append new layout tags
      * 
-     * @return ?
+     * @return bigest key reached or null if no key was proccesed.
      */
     private String processLayout(Properties properties, SortedSet<String> keys, String currentAppenderPrefix, Element appender) {
         final String prefix=currentAppenderPrefix+".layout";
@@ -732,13 +751,14 @@ public class PropertiesToXML {
     }
 
     /**
+     * Process Appender references
      * 
      * @param properties log4j properties
      * @param keys   sorted properties keys
      * @param handlerPrefix    key name appender prefix
      * @param element  appender tag to append new appender-ref tags
      * 
-     * @return ?
+     * @return bigest key reached or null if no key was proccesed.
      */
     private String processAppenderRefs(Properties properties, SortedSet<String> keys, String handlerPrefix, Element element){
         String prefix=handlerPrefix+".appender-ref";
@@ -754,6 +774,7 @@ public class PropertiesToXML {
     }
     
     /**
+    * Keep only the bigest key.
     * 
     * @param newKey new key
     * @param lastKey currently biggest key
