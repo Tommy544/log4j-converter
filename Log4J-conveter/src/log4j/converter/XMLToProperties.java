@@ -2,6 +2,7 @@ package log4j.converter;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
@@ -36,7 +37,7 @@ public class XMLToProperties {
     /**
      * XSL file path
      */
-    private final String xslFile = "XMLToProperties.xsl";
+    private final InputStream xslFile = XMLToProperties.class.getResourceAsStream("/log4j/converter/XMLToProperties.xsl");
     
     /**
      * Whether error was found
@@ -117,7 +118,7 @@ public class XMLToProperties {
         System.out.println(tf.getClass());
 
         Transformer xsltProc = tf.newTransformer(
-                new StreamSource(new File(xslFile)));
+                new StreamSource(xslFile));
 
         xsltProc.transform(
                 new StreamSource(new File(inputFile)),
@@ -142,7 +143,7 @@ public class XMLToProperties {
         }
         
         Transformer xsltProc = tf.newTransformer(
-                new StreamSource(new File(xslFile)));
+                new StreamSource(xslFile));
 
         xsltProc.transform(
                 new StreamSource(new File(inputFile)),
