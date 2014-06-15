@@ -1,7 +1,7 @@
 === Záverečná zpráva ===
 
-    * [https://code.google.com/p/log4j-converter/source/browse/wiki/HenrichHorvath.xml Formát DocBook]
+    * [https://code.google.com/p/log4j-converter/source/browse/wiki/zaverecne_spravy/HenrichHorvath.xml Formát DocBook]
 
-    * [https://code.google.com/p/log4j-converter/source/browse/wiki/HenrichHorvath.xhtml Formát XHTML]
+    * [https://code.google.com/p/log4j-converter/source/browse/wiki/zaverecne_spravy/HenrichHorvath.xhtml Formát XHTML]
 
-    * [https://code.google.com/p/log4j-converter/source/browse/wiki/HenrichHorvath.pdf Formát PDF]
+    * [https://code.google.com/p/log4j-converter/source/browse/wiki/zaverecne_spravy/HenrichHorvath.pdf Formát PDF]
