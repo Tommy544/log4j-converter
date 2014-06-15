@@ -23,7 +23,27 @@ The conversion from .xml to .properties is done using Extensible Stylesheet Lang
 
 = Documentation =
 
-== Classes ==
+== Java Packages used ==
+
+    * java.io
+
+    * java.util
+
+    * java.util.logging
+
+    * javax.xml.parsers
+
+    * javax.xml.transform
+
+    * javax.xml.transform.dom
+
+    * javax.xml.transform.stream
+
+    * org.w3c.dom
+
+    * org.xml.sax
+
+== Source classes ==
 
     * [Log4JConveter Log4JConveter]
 
