@@ -1,0 +1,65 @@
+<?xml version='1.0'?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook V5.0//EN"
+"http://www.oasis-open.org/docbook/xml/5.0/docbook.dtd">
+<article>
+  <articleinfo>
+    <author><firstname>Vladimír</firstname><surname>Čaniga</surname></author>
+    <authorinitials>VC</authorinitials>
+    <title>Záverečná správa k projektu Log4J-converter</title>
+    <titleabbrev>Zav. Sprava</titleabbrev>
+    <revhistory>
+      <revision>
+	<revnumber>1.0</revnumber>
+	<date>15 Jun 2014</date>
+	<revremark>Submitted.</revremark>
+      </revision>
+    </revhistory>
+  </articleinfo>
+  
+  <para>
+    V pozícii vedúceho nášho týmu bolo pre mňa prvým krokom navrhnúť riešenie aplikacie a toto riešenie potom rozkúskovať na niekoľko podúloh, ktoré sme si medzi sebou rozdelili.
+    Po konzultácii s ostatnými členmi týmu sme aplikaciu rozdelili na dve časti: prevod z XML do properties a prevod z properties do XML. 
+    Pri prevode z XML do properties sme použili XSLT transformácie a z properties do XML DOM strom.
+  </para>
+  
+  <para>
+    Ďalej som naimplementoval hlavnú triedu programu - Log4j-converter, ktorá rieši spracovanie vstupných parametrov od užívateľa a následné volanie funkcií tried, ktoré už vykonávajú samotnú konverziu.
+    Aplikácia funguje v štyroch módoch, ktoré si sama zvolí podľa uživateľom zadaných parametrov. Spôsoby použitia sú teda následovné:
+  </para>
+  
+  <itemizedlist>
+    <listitem>
+      <para>
+        Pre konverziu XML súboru do formátu properties a vypísanie výsledku na štandardný výstup, uživateľ zadá jeden parameter, a to vstupný XML súbor pre konverziu.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Pre konverziu XML súboru do formátu properties a uloženie výsledku do súboru, uživateľ zadá prvým parametrom vstupný XML súbor a druhým parametrom výstupný properties súbor.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Pre konverziu properties súboru do formátu XML a vypísanie výsledku na štandardný výstup, uživateľ zadá jeden parameter, a to vstupný properties súbor pre konverziu.
+      </para>
+    </listitem>
+    <listitem>
+      <para>
+        Pre konverziu properties súboru do formátu XML a uloženie výsledku do súboru, uživateľ zadá prvým parametrom vstupný properties súbor a druhým parametrom výstupný XML súbor.
+      </para>
+    </listitem>
+  </itemizedlist>
+  
+  <para>
+    Ďalej som sa podielal na implementácii testov pre triedu XMLToProperties a kompletnú implementáciu testov pre triedu PropertiesToXML.
+  </para>
+  
+  <para>
+    Taktiež som sa podielal na zhotovovaní wiki stránok projektu a navrhol som class diagram, ktorý je dostupný na wiki.
+  </para>
+  
+  <para>
+    Výsledkom našej snahy je plne funkčná aplikácia.
+  </para>
+</article>
+  
