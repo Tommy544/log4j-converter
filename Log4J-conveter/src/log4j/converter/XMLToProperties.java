@@ -36,7 +36,7 @@ public class XMLToProperties {
     /**
      * XSL file path
      */
-    private final String xslFile = "src/log4j/converter/XMLToProperties.xsl";
+    private final String xslFile = "XMLToProperties.xsl";
     
     /**
      * Whether error was found
