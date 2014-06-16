@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE article SYSTEM "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN">
+
+<article lang="">
+
+
+<sect1>
+
+<title>Záverečná správa (Lucia Štubňová)</title>
+Záverečná správa (Lucia Štubňová)
+</sect1>
+
+
+<sect1>
+
+<title>Úvod</title>
+Úvod
+<para>Našou úlohou bolo vytvoriť aplikáciu na konverziu log4j konfigurácie z formátu XML do properties a naopak. Po úvodných konzultáciach sme sa rozhodli program rozdeliť do 3 tried: Log4JConverter, XMLToProperties a PropertiesToXML(viď. obrázok).</para>
+
+<para/>
+
+
+<para>
+
+<inlinegraphic depth="5.58cm" width="10.08cm" fileref="embedded:graphics1"/>
+
+</para>
+
+<para/>
+
+<para/>
+
+<para/>
+
+<para/>
+
+<para/>
+
+<para/>
+
+<para/>
+
+<para>Hlavná trieda programu Log4jConverter načíta vstupné parametre od užívateľa a na ich základe rieši ďalší postup. Užívateľ si môže zvoliť, či má aplikácia vypísať výstupnú log4j konfiguráciu na štandardný výstup alebo do súboru.</para>
+
+<para>Triedy XMLToProperties a PropertiesToXML zodpovedajú za samotnú konverziu. Pre konverziu z XML formátu do properties sme sa dohodli na použití XSLT, prevod z properties na XML je naprogramovaný pomocou DOM.</para>
+
+<para>Aplikácia je programovaná v jazyku Java. Je jednotkovo testovaná za použitia JUnit.</para>
+
+<para/>
+
+<para>Moja práca</para>
+
+<para>Mojou hlavnou úlohou bolo vytvorenie súboru XMLToProperties.xsl, ktorý slúži pre transformáciu XML formátu do formátu properties. Pri jeho návrhu som vychádzala primárne z dokumentácie Log4J a z DTD pre log4j XML konfiguráciu(verzia 1.2). Používala som prevažne funkcionálny prístup a xsl obsahuje kvôli prehľadnosti a čitateľnosti kódu značné množstvo šablón.</para>
+
+<para>Pre ilustráciu transformácie prikladám obrázky.</para>
+
+<para>Vstupný XML súbor:</para>
+
+
+<para>
+
+<inlinegraphic depth="5.413cm" width="12.465cm" fileref="embedded:graphics3"/>
+
+</para>
+
+<para/>
+
+<para/>
+
+<para/>
+
+<para/>
+
+<para/>
+
+<para/>
+
+<para/>
+
+<para/>
+
+<para>Výstupný properties súbor:</para>
+
+
+<para>
+
+<inlinegraphic depth="3.765cm" width="12.459cm" fileref="embedded:graphics2"/>
+
+</para>
+
+<para/>
+
+<para/>
+
+<para/>
+
+<para/>
+
+<para/>
+
+<para>Takisto som sa podielala na vytváraní unit testov pred triedu XMLToProperties, konkrétne pre metódu Convert(String outputFile). Tie testujú zhodu výstupného súboru s očakávaným výsledkom konverzie.</para>
+
+</sect1>
+
+
+<sect1>
+
+<title/>
+
+</sect1>
+
+</article>
