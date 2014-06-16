@@ -3,5 +3,3 @@
   * [https://code.google.com/p/log4j-converter/source/browse/wiki/zaverecne_spravy/Lucia_Stubnova.xml XML]
 
   * [https://code.google.com/p/log4j-converter/source/browse/wiki/zaverecne_spravy/Lucia_Stubnova.pdf PDF]
-
-  * [https://code.google.com/p/log4j-converter/source/browse/wiki/zaverecne_spravy/Lucia_Stubnova.xhtml XHTML]
