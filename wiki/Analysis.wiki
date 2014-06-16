@@ -15,6 +15,7 @@ The application is designed to be used as a command line application. The follow
 
 
 *Example:*
+
 java -jar Log4j-converter input.xml [output.properties]
 
 java -jar Log4j-converter input.properties [output.xml]
