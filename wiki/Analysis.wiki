@@ -13,6 +13,11 @@ The application is designed to be used as a command line application. The follow
   # User starts the application with two arguments. The first argument points to an .xml file (input) and the second argument points to a desired .properties file (output)
     * The application transforms .xml file to a .properties file and saves the result as a file (given by second argument)
 
+
+*Example:*
+java -jar Log4j-converter input.xml [output.properties]
+
+java -jar Log4j-converter input.properties [output.xml]
 ----
 
 = Implementation =
